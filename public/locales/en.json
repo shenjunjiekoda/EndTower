@@ -1,0 +1,115 @@
+{
+    "title": "END Tower",
+
+    "full_name": "Damien Noella Eda",
+
+    "loading": "Please wait...",
+    "loading_resources": "Resources are loading...",
+
+    "start_game": "Start",
+    "load_game": "Load",
+    "easy_level": "Easy",
+    "normal_level": "Normal",
+    "hard_level": "Hard",
+
+    "level": "Level",
+    "hp": "HP",
+    "attack": "Attack",
+    "defense": "Defense",
+    "money": "Money",
+    "exp": "EXP",
+
+    "monster": "Monster",
+    
+    "loading_core_js": "Loading core JS files...",
+    "loading_floors": "Loading floor files...",
+    "tower_entrance": "Tower Entrance",
+    "dream_start": "The Starting Point of Dreams",
+
+    "submit": "submit",
+    "input_name_tip": "Please enter your name",
+    
+    "main_1": "Main Tower Floor 1",
+    "main_2": "Main Tower Floor 2",
+    "main_3": "Main Tower Floor 3",
+    "main_4": "Main Tower Floor 4",
+    "main_5": "Main Tower Floor 5",
+    "main_6": "Main Tower Floor 6",
+    "main_7": "Main Tower Floor 7",
+    "main_8": "Main Tower Floor 8",
+    "main_9": "Main Tower Floor 9",
+    "main_10": "Main Tower Floor 10",
+    "main_11": "Main Tower Floor 11",
+    "main_12": "Main Tower Floor 12",
+    "main_13": "Main Tower Floor 13",
+    "main_14": "Main Tower Floor 14",
+    "main_15": "Main Tower Floor 15",
+    "main_16": "Main Tower Floor 16",
+    "main_17": "Main Tower Floor 17",
+    "main_18": "Main Tower Floor 18",
+    "main_19": "Main Tower Floor 19",
+    "main_20": "Main Tower Floor 20",
+    "main_21": "Main Tower Floor 21",
+    "main_22": "Main Tower Floor 22",
+    "main_22L": "Floor 22 Left",
+    "main_22R": "Floor 22 Right",
+    "main_22D": "Floor 22 Down",
+    "main_23": "Main Tower Floor 23",
+    
+
+    "main_24": "Main Tower Floor 24",
+    "main_25": "Main Tower Floor 25",
+
+    "boss_1": "Boss Floor",
+
+    "get_item": "Get item: ",
+    "have_no": "You have no ",
+    "open_door_failed": "You can't open this door.",
+    "try_beat_failed": "You can't beat this one.",
+    "battle_success": "You have defeated ",
+    "not_enough": "You have not enough ",
+
+    "gameover_ending1": "You are died!",
+    "gameover_ending2": "You win the game!",
+    "posion": "You have been poisoned and died.",
+    "zone": "You have been attacked by zone and died.",
+    "damaged": "You have been damaged and died.",
+    "battle": "You have been defeated and died.",
+    "True End: ": "True End",
+    "Normal End: ": "Normal End",
+
+    "blocking_attack_half_hp": "been blocked and lost half of your HP",
+    "blocking_attack": "been blocked and lost HP",
+    "zone_attack": "been attacked by a zone and lost HP",
+
+    "shop_not_opened": "Shop is not opened",
+    "shop_not_available": "Shop is not available",
+
+    "confirm":"confirm",
+    "cancel":"cancel",
+    "leave": "leave",
+    "return": "return",
+    "last_page": "Previous",
+    "next_page": "Next",
+    "remove_item": "Remove item ",
+    "yes": "是",
+    "no": "否",
+    
+    "empty": "Empty",
+    "no_enemy": "No enemy here",
+    "no_special": "No special attribute",
+    "click_anywhere_to_continue": "Click anywhere to continue",
+    "stop_move": "Stop moving and continue",
+    "use_item": "Use item successfully",
+    "use_item_failed": "Use item failed ",
+
+    "show_battle_animate_confirm": "Do you want to enable battle animation? \n(You can change it later in the system settings.)",
+    "choose_sex": "Choose your sex",
+    "show_sex_confirm": "Are you a boy?",
+    "use_transporter_neer_floor": "You can only use the transporter on the staircase.",
+    "failed_to_use_transporter": "Failed to use transporter",
+    "transport_floor": "transport to floor",
+    "center_fly_failed": "failed to center fly",
+
+    "unimplemented": "This feature is not implemented yet."
+}

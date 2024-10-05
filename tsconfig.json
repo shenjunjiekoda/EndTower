@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "ES6",
+        "strict": true,
+        "moduleResolution": "node",
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": "./",
+        "paths": {
+            "*": [
+                "src/*"
+            ]
+        },
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+    },
+    "include": [
+        "./src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
