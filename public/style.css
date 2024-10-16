@@ -1,0 +1,507 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    overflow: hidden;
+}
+
+#screenBox {
+    background-color: #000;
+    position: absolute;
+
+    /* 包含内边距和边框在宽度内 | Include padding and border in the width */
+    box-sizing: border-box;
+    /* 外部边框为金色 | Set external border to gold */
+    box-shadow: 0 0 0 2px gold;
+}
+
+/* 游戏提示信息 | Game Tip Information */
+#loadingTips {
+    /* 设置层级，确保在最上层显示 | Set z-index for top display */
+    z-index: 15;
+
+    top: 15px;
+    left: 15px;
+    position: fixed;
+
+    font-size: 1rem;
+    color: #fff;
+}
+
+/* 菜单箱子 | Menu Box */
+#menuBox {
+    z-index: 11;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    
+    overflow: hidden;
+    /* 隐藏超出内容 | Hide overflow */
+
+    background-color: #fff;
+    /* 背景为白色 | Set background to white */
+}
+
+#loadingMenu {
+    /* 高层级显示 | Set higher z-index */
+    z-index: 14;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+
+    background-color: #000;
+}
+
+/* 加载进度条背景 | Loading Progress Bar Background */
+#loadingProgressBar {
+    z-index: 15;
+
+    width: 90%;
+    height: 5%;
+    top: 5%;
+    margin: 0 5%;
+    /* 水平居中 | Center horizontally */
+    position: absolute;
+
+    background-color: #fff;
+}
+
+/* 加载进度条 | Progress Bar */
+#loadingProgress {
+    width: 0%;
+    /* 初始宽度为0 | Initial width is 0 */
+    height: 100%;
+    /* 填充整个进度条背景 | Fill the progress bar background */
+
+    background-color: #666;
+}
+
+/* 加载提示 | Loading Tips */
+#resourceLoadingTips {
+    z-index: 15;
+
+    top: 8%;
+    left: 5%;
+    position: absolute;
+
+    font-size: 0.6rem;
+    color: #fff;
+}
+
+/* 菜单背景图片 | Menu Background Image */
+#menuBackground {
+    z-index: 12;
+
+    top: 50%;
+    left: 50%;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    /* 居中对齐 | Center the element */
+    transform: translate(-50%, -50%);
+}
+
+/* 菜单游戏标题 | Menu Game Title */
+#menuGameTitle {
+    z-index: 12;
+
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    /* 水平居中 | Horizontally center */
+    margin: 0 auto;
+    margin-top: 10%;
+    position: absolute;
+
+    /* 设置字体和大小 | Set font and size */
+    text-align: center;
+    font: bold 4rem STXingkai;
+    color: gold;
+    text-shadow:
+        2px 2px 0px rgb(144, 92, 37),
+        -2px -2px 0px rgb(144, 92, 37),
+        -2px 2px 0px rgb(144, 92, 37),
+        2px -2px 0px rgb(144, 92, 37),
+        2px 0px 0px rgb(144, 92, 37),
+        -2px 0px 0px rgb(144, 92, 37),
+        0px 2px 0px rgb(144, 92, 37),
+        0px -2px 0px rgb(144, 92, 37);
+}
+
+/* 菜单按钮箱子 | Menu Button Box */
+#menuButtonsBox {
+    z-index: 12;
+
+    /* 默认隐藏 | Hide by default */
+    display: none;
+
+    width: 50%;
+    /* 设置宽度为60% */
+    margin: 0 auto;
+    /* 通过margin居中 */
+    bottom: 0;
+    position: absolute;
+    transform: translate(50%, 0%);
+
+    font-size: 1.5rem;
+    text-align: center;
+
+    background-color: #ee9949;
+    opacity: 0.85;
+    margin-bottom: 8%;
+    /* 底部留白 | Margin at the bottom */
+    border: 3px solid #8B4513;
+    /* 添加棕色边框 */
+    border-radius: 7%;
+    /* 设置椭圆形边框角 */
+}
+
+
+/* 菜单按钮显示 | Menu Buttons */
+#menuButtons {
+    display: block;
+}
+
+/* 单个开始按钮样式 | Single Start Button */
+.menu_button_clz {
+    display: block;
+    color: #fff;
+
+    width: 100%;
+    margin: 20px 0;
+
+    font-weight: bold;
+
+    /* 鼠标悬停时显示指针 | Show pointer on hover */
+    cursor: pointer;
+    /* 添加过渡效果 | Add transition effect */
+    transition: all 0.2s ease;
+}
+
+/* 定义抖动动画 | Define Shake Animation */
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-1px);
+    }
+}
+
+/* 鼠标悬停效果 | Hover Effect */
+.menu_button_clz:hover {
+    color: rgb(255, 183, 0);
+    background-color: rgb(244, 238, 209);
+    /* 边缘虚化 | Edge blur */
+    box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.5);
+    /* 椭圆形 | Elliptic shape */
+    border-radius: 25px;
+    font-size: 1.7rem;
+    /* 增大字体 */
+    /* 轻微放大按钮并居中 */
+    transform: scale(1.1) translateX(45%);
+    /* 悬停时宽度变小 */
+    width: 50%;
+    /* 使按钮居中 */
+    left: 50%;
+}
+
+.menu_button_clz:hover span {
+    display: inline-block;
+    /* 添加抖动动画 */
+    animation: shake 0.8s infinite;
+}
+
+/* 关卡选择按钮 | Level Selection Buttons */
+#levelButtons {
+    display: none;
+}
+
+/* 楼层切换提示框 | Floor Switch Tips Box */
+#floorSwitchTipBox {
+    z-index: 10;
+
+    /* 默认隐藏 | Hidden by default */
+    display: none;
+
+    /* 背景为黑色 | Set background to black */
+    background-color: #000;
+
+    /* 文字颜色为白色 | Set text color to white */
+    color: #fff;
+    text-align: center;
+
+    position: absolute;
+
+    width: 80%;
+    /* 根据需要调整宽度 */
+    height: 30%;
+    /* 根据需要调整高度 */
+}
+
+/* 标题标签提示 | Title Label Tip */
+#titleLabelTip {
+    margin-top: 10%;
+    margin-left: auto;
+    margin-right: auto;
+
+    /* 字体 | font */
+    font: bold 3rem STXingkai;
+}
+
+/* 版本标签提示 | Version Label Tip */
+#versionLabelTip {
+    margin-top: -5%;
+
+    /* 字体 | font */
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 楼层名称提示 | Floor Name Label Tip */
+#floorNameLabelTip {
+    margin-top: 30px;
+
+    /* 字体 | font */
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+/* 清除浮动 | Clearfix for Float Clearing */
+.clearfix:before,
+.clearfix:after {
+    content: "";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+/* 状态栏 | Status Bar */
+#statusBar {
+    z-index: 9;
+
+    /* 默认隐藏 | Hidden by default */
+    display: none;
+
+    /* 背景图 | Background image */
+    background: url(images/status_bar/bg.png);
+    background-size: auto 100%;
+
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    box-sizing: border-box;
+}
+
+#statusBar .statusBarItem {
+    display: flex;
+    position: relative;
+    float: left;
+
+    /* 包含内边距和边框在宽度内 | Include padding and border in the width */
+    box-sizing: border-box;
+}
+
+.statusBarItem img {
+    /* flex: 0.3; */
+    vertical-align: middle;
+
+    /* width: 36px;
+    height: 36px; */
+    height: 100%;
+    /* width: 100%; */
+    /* aspect-ratio: 1/1; */
+    /* 保持图像的宽高比 */
+    aspect-ratio: 1 / 1;
+    /* 保持宽高比为1:1 */
+    object-fit: cover;
+    /* 或者使用 object-fit: cover; 根据需要选择 */
+}
+
+.statusBarItem p {
+    /* flex: 1; */
+    text-align: center;
+    /* 模拟文本边框 */
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+}
+
+#keys {
+    /* width: 100%; */
+    /* display: flex; */
+    /* background-color: #6bb7c0; */
+    background: url(images/status_bar/keybg.png);
+    /* background-size: auto 100%; */
+    object-fit: contain;
+    /* border: 2px solid #d125fb; */
+}
+
+#keys img {
+    flex: 1;
+    width: 23px;
+    height: 23px;
+}
+
+#keys span {
+    flex: 1;
+    text-align: center;
+    /* 可选：使文本居中 */
+
+    /* 斜体加粗，字体Verdana | Bold italic font */
+    font: bold italic large Verdana;
+    color: white;
+
+    /* 模拟文本边框 */
+    text-shadow:
+        -0.5px -0.5px 0 black,
+        0.5px -0.5px 0 black,
+        -0.5px 0.5px 0 black,
+        0.5px 0.5px 0 black;
+}
+
+#statusBar p {
+    display: inline-block;
+    vertical-align: middle;
+
+    width: 60%;
+    margin: 0;
+
+    color: white;
+    /* 斜体加粗，字体Verdana | Bold italic font */
+    font: bold italic 1.2em Verdana;
+}
+
+
+/* 工具栏 | Tool Bar */
+#toolBar {
+    z-index: 8;
+
+    /* 默认隐藏 | Hidden by default */
+    display: none;
+
+    background: url(images/tool_bar/bg.png);
+    background-size: auto 100%;
+
+    position: absolute;
+    box-sizing: border-box;
+}
+
+#toolBar .toolBarItem {
+    position: relative;
+    float: left;
+}
+
+@keyframes floatWithScale {
+
+    /* 初始位置 | Initial position */
+    0% {
+        transform: translateY(0) scale(1.3);
+
+    }
+
+    /* 向上移动10px | Move up 10px */
+    100% {
+        transform: translateY(-10px) scale(1.3);
+
+    }
+}
+
+.toolBarItem:hover {
+    /* 添加上下浮动动画 | Add up and down float animation */
+    animation: floatWithScale 1s infinite alternate;
+
+}
+
+/* 游戏幕布效果 | Game Curtain Effect */
+#curtain {
+    z-index: 7;
+
+    background: #000000;
+    opacity: 0;
+    /* 初始透明 | Initially transparent */
+
+    position: absolute;
+}
+
+/* #nameForm {
+    display: none;
+} */
+
+#nameInput {
+    z-index: 20;
+    
+    display: none;
+    position: absolute;
+    
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+    padding: 0.5em;
+}
+
+#nameInput:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+#submitName {
+    z-index: 20;
+    display: none;
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* 游戏画布 | Game Canvas */
+.gameCanvas {
+    position: absolute;
+    box-sizing: border-box;
+}
+
+/* 层次 | Layers */
+#bg {
+    z-index: 1;
+}
+
+#event {
+    z-index: 2;
+}
+
+#damage {
+    z-index: 3;
+}
+
+#player {
+    z-index: 4;
+}
+
+#animate {
+    z-index: 5;
+}
+
+#ui {
+    z-index: 8;
+}
+
+#data {
+    z-index: 9;
+}

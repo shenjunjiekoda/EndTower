@@ -290,6 +290,7 @@
   },
   "devDependencies": {
     "@types/i18next": "^12.1.0",
+    "@types/webpack-env": "^1.18.5",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
     "cross-env": "^7.0.3",
@@ -306,7 +307,9 @@
     "webpack-dev-server": "^5.1.0"
   },
   "scripts": {
+    "prestart": "node animateProcess.js",
     "start": "cross-env NODE_ENV=development webpack serve --open",
+    "prebuild": "node animateProcess.js",
     "build": "cross-env NODE_ENV=production webpack"
   },
   "keywords": [],

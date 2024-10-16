@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title data-i18n="title">dummy</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="JOSTAR">
+        <title data-i18n="title">dummy</title>
+        <meta name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent" />
+        <meta name="screen-orientation" content="portrait">
+        <meta name="full-screen" content="yes">
+        <meta name="browsermode" content="application">
+        <meta name="x5-orientation" content="portrait">
+        <meta name="x5-fullscreen" content="true">
+        <meta name="x5-page-mode" content="app">
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+
+        <div id="screenBox">
+            <input type="text" id="nameInput" placeholder="Enter your name">
+            <button id="submitName" data-i18n="submit">submit</button>
+            <!-- 加载提示 | Loading tips -->
+            <p id="loadingTips" data-i18n="loading"></p>
+            <!-- 菜单框 | Menu Box -->
+            <div id="menuBox">
+                <!-- 加载菜单 | Loading Menu -->
+                <div id="loadingMenu">
+                    <div id="loadingProgressBar">
+                        <div id="loadingProgress"></div>
+                    </div>
+                    <p id="resourceLoadingTips"
+                        data-i18n="loading_resources"></p>
+                </div>
+                <!-- 菜单背景 | Menu background -->
+                <img id="menuBackground" src="images/menu/background.png"
+                    alt="Menu Background Image">
+                <!-- 菜单标题 | Menu title -->
+                <p id='menuGameTitle'></p>
+                <!-- 菜单按钮箱子 | Menu buttons -->
+                <div id="menuButtonsBox">
+                    <!-- 菜单按钮 | Menu button -->
+                    <div id="menuButtons">
+                        <div class="menu_button_clz" id="startGame">
+                            <span data-i18n="start_game"></span>
+                        </div>
+                        <div class="menu_button_clz" id="loadGame">
+                            <span data-i18n="load_game"></span>
+                        </div>
+                    </div>
+                    <!-- 难度选择按钮 | Difficulty choose buttons -->
+                    <div id="levelButtons">
+                        <div class="menu_button_clz" id="easyLevel">
+                            <span data-i18n="easy_level"></span>
+                        </div>
+                        <div class="menu_button_clz" id="normalLevel">
+                            <span data-i18n="normal_level"></span>
+                        </div>
+                        <div class="menu_button_clz" id="hardLevel">
+                            <span data-i18n="hard_level"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地图切换提示框 | Floor switch tip box -->
+            <div id="floorSwitchTipBox">
+                <p id="titleLabelTip"></p>
+                <p id="versionLabelTip"></p>
+                <p id="floorNameLabelTip"></p>
+            </div>
+
+            <!-- 状态栏 | Status bar -->
+            <div id="statusBar" class="clearfix">
+                <div id="floorStatus">
+                    <div class="statusBarItem">
+                        <img title="floor" id="floorStatusImg"
+                            src="images/statusBar/floor.png">
+                        <p class="statusText" id="floorStatusText"></p>
+                    </div>
+                </div>
+                <div class="statusBarItem">
+                    <img title="level" id="levelStatusImg"
+                        src="images/statusBar/level.png">
+                    <p class="statusText" id="levelStatusText"></p>
+                </div>
+                <div class="statusBarItem">
+                    <img title="hp" id="hpStatusImg"
+                        src="images/statusBar/hp.png">
+                    <p class="statusText" id="hpStatusText"></p>
+                </div>
+                <div class="statusBarItem">
+                    <img title="attack" id="attackStatusImg"
+                        src="images/statusBar/attack.png">
+                    <p class="statusText" id="attackStatusText"></p>
+                </div>
+                <div class="statusBarItem">
+                    <img title="defense" id="defenseStatusImg"
+                        src="images/statusBar/defense.png">
+                    <p class="statusText" id="defenseStatusText"></p>
+                </div>
+                <div class="statusBarItem">
+                    <img title="money" id="moneyStatusImg"
+                        src="images/statusBar/money.png">
+                    <p class="statusText" id="moneyStatusText"></p>
+                </div>
+                <div class="statusBarItem">
+                    <img title="exp" id="expStatusImg"
+                        src="images/statusBar/exp.png">
+                    <p class="statusText" id="expStatusText"></p>
+                </div>
+                <div class="statusBarItem">
+                    <div id="keys1">
+                        <img title="yellowkey" id="yellowKeyStatusImg"
+                            src="images/statusBar/yellowkey.png">
+                        <span class="statusText" id="yellowKey"
+                            style="color:#FFCCAA;font:bold italic 1em Verdana;text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"></span>
+                        <img title="bluekey" id="blueKeyStatusImg"
+                            src="images/statusBar/bluekey.png">
+                        <span class="statusText" id='blueKey'
+                            style="color:#AAAADD;font:bold italic 1em Verdana;text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"></span>
+                    </div>
+                </div>
+                <div class="statusBarItem">
+                    <div id="keys2">
+                        <img title="redkey" id="redKeyStatusImg"
+                            src="images/statusBar/redkey.png">
+                        <span class="statusText" id='redKey'
+                            style="color:#FF8888;font:bold italic 1em Verdana;text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"></span>
+                        <img title="greenkey" id="greenKeyStatusImg"
+                            src="images/statusBar/greenkey.png">
+                        <span class="statusText" id='greenKey'
+                            style="color:#20e320;font:bold italic 1em Verdana;text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="toolBar" class="clearfix">
+                <img title="encyclopedia" class="toolBarItem"
+                    id="encyclopediaToolImg"
+                    src="images/toolBar/encyclopedia.png">
+                <img title="transporter" class="toolBarItem"
+                    id="transporterToolImg"
+                    src="images/toolBar/transporter.png">
+                <img title="noteBook" class="toolBarItem"
+                    id="noteBookToolImg" src="images/toolBar/notebook.png">
+                <img title="toolBox" class="toolBarItem"
+                    id="toolBoxToolImg" src="images/toolBar/toolBox.png">
+                <img title="save" class="toolBarItem"
+                    id="saveToolImg" src="images/toolBar/save.png">
+                <img title="load" class="toolBarItem"
+                    id="loadToolImg" src="images/toolBar/load.png">
+                <img title="setting" class="toolBarItem"
+                    id="settingToolImg" src="images/toolBar/setting.png">
+            </div>
+
+            <!-- 遮罩层 | Curtain -->
+            <div id="curtain">
+            </div>
+            <!-- 游戏画布 -->
+            <canvas class="gameCanvas" id="bg" width="416"
+                height="416"></canvas>
+            <canvas class="gameCanvas" id="event" width="416"
+                height="416"></canvas>
+            <canvas class="gameCanvas" id="damage" width="416"
+                height="416"></canvas>
+            <canvas class="gameCanvas" id="player" width="416"
+                height="416"></canvas>
+            <canvas class="gameCanvas" id="animate" width="416"
+                height="416"></canvas>
+            <canvas class="gameCanvas" id="ui" width="416"
+                height="416"></canvas>
+            <canvas class="gameCanvas" id="data" width="416" height="416">
+                Your browser does not support canvas.
+            </canvas>
+        </div>
+
+        <script src="bundle.js"></script>
+    </body>
+</html>

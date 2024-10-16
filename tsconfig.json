@@ -16,6 +16,7 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
+        "experimentalDecorators": true
     },
     "include": [
         "./src/**/*.ts"

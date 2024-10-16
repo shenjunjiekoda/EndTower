@@ -71,7 +71,7 @@
 
     "gameover_ending1": "You are died!",
     "gameover_ending2": "You win the game!",
-    "posion": "You have been poisoned and died.",
+    "poison": "You have been poisoned and died.",
     "zone": "You have been attacked by zone and died.",
     "damaged": "You have been damaged and died.",
     "battle": "You have been defeated and died.",
@@ -110,6 +110,9 @@
     "failed_to_use_transporter": "Failed to use transporter",
     "transport_floor": "transport to floor",
     "center_fly_failed": "failed to center fly",
+
+    "save": "save",
+    "load": "load",
 
     "unimplemented": "This feature is not implemented yet."
 }

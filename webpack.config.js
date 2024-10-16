@@ -5,6 +5,9 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+    infrastructureLogging: {
+        level: 'log',
+    },
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     entry: './src/main.ts',
     output: {
@@ -28,15 +31,19 @@ module.exports = {
             },
             {
                 test: /\.(png|jpg|gif)$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'images/',
-                        },
-                    },
-                ],
+                type: 'asset/resource',
+                generator: {
+                    filename: 'images/[name][ext]',
+                }
+                // use: [
+                //     {
+                //         loader: 'file-loader',
+                //         options: {
+                //             name: '[name].[ext]',
+                //             outputPath: 'images/',
+                //         },
+                //     },
+                // ],
             },
             {
                 test: /\.(mp3|wav|ogg)$/,
@@ -84,7 +91,7 @@ module.exports = {
         }),
     ],
     devServer: {
-        static: path.join(__dirname, 'public'),
+        static: path.join(__dirname, 'dist'),
         compress: true,
         port: 8133,
     },

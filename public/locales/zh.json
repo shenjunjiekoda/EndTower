@@ -66,7 +66,7 @@
 
     "gameover_ending1": "你死了！",
     "gameover_ending2": "你赢了！",
-    "posion": "中毒而死",
+    "poison": "中毒而死",
     "zone": "领域伤害致死",
     "damaged": "受伤而死",
     "battle": "战败而死",
@@ -105,6 +105,9 @@
     "failed_to_use_transporter": "使用传送器失败",
     "transport_floor": "楼层传送",
     "center_fly_failed": "中心飞行失败",
+
+    "save":"存档",
+    "load":"读档",
 
     "unimplemented": "功能暂未实现"
 
