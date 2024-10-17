@@ -1,15 +1,16 @@
-import { importAll, isset, logExecutionTime } from "../common/util";
+import { callertrace, importAll, isset, log, logExecutionTime } from "../common/util";
+
+const AUDIO_OUTPUT_DIR='audios'
 
 class AudioManager {
     private audios: Record<string, HTMLAudioElement>;
 
     constructor() {
         this.audios = {};
-        logExecutionTime(this.initAudios)();
     }
 
     get(audioName: string) {
-        if (audioName in audios) {
+        if (audioName in this.audios) {
             return this.audios[audioName];
         }
         throw new Error(`Audio ${audioName} not found`);
@@ -35,11 +36,12 @@ class AudioManager {
         });
     }
 
+    @log
+    @callertrace
     initAudios() {
-        const audios = importAll(require.context('../../public/audios', false, /\.(png|jpe?g|gif)$/));
-        audios.forEach((audio: any) => {
-            console.log(`importing audio: ${audio}`);
-            const path = audio as string;
+        const audioList = importAll(require.context('../../public/audios', false, /\.(mp3|ogg)$/));
+        audioList.forEach(({ path, module }) => {
+            console.log(`importing audio  ${path}`);
             this.loadAudio(path, (audioName, audio) => {
                 console.log(`loaded audio: ${audioName}`, audio);
                 this.audios[audioName] = audio;
@@ -56,7 +58,7 @@ class AudioManager {
         console.log(`loading audio: ${audioName} ...`);
 
         try {
-            let audio: HTMLAudioElement = new Audio(audioPath);
+            let audio: HTMLAudioElement = new Audio(`${AUDIO_OUTPUT_DIR}/${audioName}`);
             if (isset(callback)) {
                 callback!(audioName!, audio);
             }
@@ -67,4 +69,4 @@ class AudioManager {
 }
 
 
-export let audios = new AudioManager();
+export let audioMgr = new AudioManager();

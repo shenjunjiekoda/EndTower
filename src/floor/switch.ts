@@ -11,7 +11,7 @@ import statusBar from "../window/statusBar";
 import { toolBar } from "../window/toolBar";
 import { canvasAnimate } from "../window/canvas/animates";
 import { canvas } from "../window/canvas/canvas";
-import { audios } from "../resource/audios";
+import { audioMgr } from "../resource/audios";
 import { PlayerLocation, playerMgr } from "../player/data";
 import { eventManager } from "../events/events";
 
@@ -162,7 +162,7 @@ export function switchFloor(destFloorId: number, stairDirection?: StairDirection
             canvas.drawMap(destFloorId, () => setTimeout(onDrawMapComplete, DEFAULT_TIMEOUT_MILLS));
         };
 
-        audios.play('switch_floor.mp3');
+        audioMgr.play('switch_floor.mp3');
         canvasAnimate.showDomAsAnimate('floorSwitchTipBox', frameTime / 2, switchImpl);
     }, DEFAULT_TIMEOUT_MILLS);
 }

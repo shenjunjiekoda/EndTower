@@ -10,7 +10,7 @@ import i18next from "i18next";
 import { itemMgr } from "../items/data";
 import { autoRoute } from "../player/autoroute";
 import { PlayerData, PlayerLocation, playerMgr } from "../player/data";
-import { audios } from "../resource/audios";
+import { audioMgr } from "../resource/audios";
 import { canvasAnimate } from "../window/canvas/animates";
 import { canvas, damage, event, ui } from "../window/canvas/canvas";
 import { removeBlock } from "../window/canvas/map";
@@ -129,14 +129,13 @@ class EventManager {
         const OnPlayerStop = () => {
             core.lock();
 
+            core.setEventId('action');
             core.setNewEventData({
-                id: 'action', data: {
-                    list: clone(list),
-                    x: x,
-                    y: y,
-                },
-                callback: callback
+                list: clone(list),
+                x: x,
+                y: y,
             });
+            core.setEventCallback(callback);
             this.handleAction();
         };
 
@@ -432,7 +431,7 @@ class EventManager {
     }
 
     handleGetItem(itemId: string, itemNum: number, x: number, y: number, callback?: Function) {
-        audios.play('item.ogg');
+        audioMgr.play('item.ogg');
         const item = itemMgr.getItemByID(itemId);
 
         itemMgr.useItemEffectDirectly(itemId, itemNum);
@@ -632,7 +631,7 @@ class EventManager {
         }
 
         // open
-        audios.play("door.ogg");
+        audioMgr.play("door.ogg");
         let state = 0;
         let doorId = id;
         if (!(doorId.substring(doorId.length - 4) == "Door")) {
@@ -1029,7 +1028,7 @@ class EventManager {
                 canvas.drawTip(`${i18next.t('zone_attack')}: ${damage}`);
             }
 
-            audios.play('zone.ogg');
+            audioMgr.play('zone.ogg');
             canvasAnimate.draw("zone", x, y);
 
             if (playerMgr.getPlayerHP() <= 0) {
@@ -1051,7 +1050,7 @@ class EventManager {
         }
     }
 
-    handleSnipe(snipes: { direction: string, x: number, y: number, nx?: number, ny?: number, blockIcon?: number, blockImage?: HTMLImageElement, damage?: string, color?: string, block?: Block }[]) {
+    handleSnipe(snipes: { direction: string, x: number, y: number, nx?: number, ny?: number, blockIcon?: number, blockImages?: HTMLImageElement[], damage?: string, color?: string, block?: Block }[]) {
 
         snipes.forEach(function (snipe: { direction: string, x: number, y: number, nx?: number, ny?: number, blockIcon?: number, blockImage?: HTMLImageElement, damage?: string, color?: string, block?: Block }) {
             let x = snipe.x, y = snipe.y, direction = snipe.direction;
@@ -1101,8 +1100,8 @@ class EventManager {
                 let nBlock: Block = clone(t.block!);
                 nBlock.x = t.nx!; nBlock.y = t.ny!;
                 getMapData().blocks.push(nBlock);
-                canvasAnimate.pushGlobalAnimateObj(2, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, t.blockImage!, t.blockIcon);
-                event.drawImage(t.blockImage!, 0, t.blockIcon! * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, BLOCK_WIDTH, BLOCK_WIDTH);
+                canvasAnimate.pushGlobalAnimateObj(2, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, t.blockImages!, t.blockIcon);
+                event.drawImage(t.blockImages![0], 0, t.blockIcon! * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, BLOCK_WIDTH, BLOCK_WIDTH);
             });
             canvasAnimate.syncGlobalAnimate();
             statusBar.syncPlayerStatus();
@@ -1138,7 +1137,7 @@ class EventManager {
                     event.clearRect(nowX - 2 * DIRECTION_TO_POINT_MAP[direction].x, nowY - 2 * DIRECTION_TO_POINT_MAP[direction].y, BLOCK_WIDTH, BLOCK_WIDTH);
                     damage.clearRect(nowX - 2 * DIRECTION_TO_POINT_MAP[direction].x, nowY - 2 * DIRECTION_TO_POINT_MAP[direction].y, BLOCK_WIDTH, BLOCK_WIDTH);
 
-                    event.drawImage(snipe.blockImage!, animateCurrent * BLOCK_WIDTH, snipe.blockIcon! * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, nowX, nowY, BLOCK_WIDTH, BLOCK_WIDTH);
+                    event.drawImage(snipe.blockImages![0], animateCurrent * BLOCK_WIDTH, snipe.blockIcon! * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, nowX, nowY, BLOCK_WIDTH, BLOCK_WIDTH);
 
                     if (playerMgr.hasItem('encyclopedia')) {
                         damage.setFillStyle(WHITE);
@@ -1200,10 +1199,10 @@ class EventManager {
         }
 
         if (config.equipmentDirectly && core.hasFlag('sword')) {
-            audios.play('zone.ogg');
+            audioMgr.play('zone.ogg');
             canvasAnimate.draw('sword', x, y);
         } else {
-            audios.play('attack.ogg');
+            audioMgr.play('attack.ogg');
             canvasAnimate.draw('hand', x, y);
         }
         this.handlePostBattle(enemyId, x, y, callback);
@@ -1351,14 +1350,16 @@ class EventManager {
                 showBattleAnimateConfirm(postShowBattleConfirm);
             };
 
-            canvas.drawText(i18next.t('choose_sex'), () => {
+            const afterChooseSexText = () => {
                 showSexChoose(() => {
                     playerMgr.resetPlayerData();
                     playerMgr.setupPlayerDataByGameLevel(gameLevel)
                     eventManager.handleResetData(playerMgr.getPlayerData(), gameLevel, staticConfig.initFloorId);
                     canvas.drawText(staticConfig.startText, onDrawTextComplete);
                 });
-            });
+            };
+            console.log('call drawtext', i18next.t('choose_sex'), afterChooseSexText);
+            canvas.drawText(i18next.t('choose_sex'), afterChooseSexText);
         };
         submitButton.addEventListener('click', onNameSubmit);
         submitButton.addEventListener('touchend', onNameSubmit);

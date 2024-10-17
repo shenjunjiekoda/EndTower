@@ -10,186 +10,221 @@ class Event {
     reset() {
         this.id = undefined;
         this.data = {};
-        this.callback = undefined;
+        // this.callback = undefined;
     }
 }
 
 class CoreStatus {
+
+    private static instance: CoreStatus;
     private started: boolean = false;
     private locked: boolean = false;
     private event: Event = new Event();
     private flags: Record<string, any> = {};
     private gameLevel: GameLevel = GameLevel.Normal;
 
+    private constructor() {
+        if (CoreStatus.instance) {
+            throw new Error("Error: Instantiation failed: Use CoreStatus.getInstance() instead of new.");
+        }
+        CoreStatus.instance = this;
+    }
+
+    static getInstance() {
+        if (!CoreStatus.instance) {
+            CoreStatus.instance = new CoreStatus();
+        }
+        return CoreStatus.instance;
+    }
+
     @callertrace
     setStarted(started: boolean = true) {
-        core.started = started;
+        this.started = started;
     }
 
     isStarted() {
-        return core.started;
+        return this.started;
     }
 
     @callertrace
     lock() {
-        core.locked = true;
+        this.locked = true;
     }
 
     @callertrace
     unlock() {
-        core.locked = false;
+        this.locked = false;
     }
 
     isLocked() {
-        return core.locked;
+        return this.locked;
     }
 
     setGameLevel(level: GameLevel) {
-        core.gameLevel = level;
+        this.gameLevel = level;
     }
 
     getGameLevel() {
-        return core.gameLevel;
+        return this.gameLevel;
     }
 
     isEventSet() {
-        return isset(core.event.id);
+        return isset(this.event.id);
     }
 
+    @log
+    @callertrace
     resetEvent() {
-        core.event.reset();
+        this.event.reset();
     }
 
     setEventId(id: string) {
-        core.event.id = id;
+        this.event.id = id;
     }
 
     getEventId() {
-        return core.event.id;
+        return this.event.id;
     }
 
     @log
     @callertrace
     setNewEventData(data: Record<string, any>) {
-        core.event.data = data;
+        this.event.data = data;
     }
 
     updateEventData(key: string, value: any) {
-        core.event.data[key] = value;
+        this.event.data[key] = value;
     }
 
     hasEventData(key: string) {
-        return key in core.event.data;
+        return key in this.event.data;
     }
 
     getEventData(key: string) {
-        return core.event.data[key];
+        return this.event.data[key];
     }
 
     getEventDataCurrent() {
-        return core.event.data.current;
+        return this.event.data.current;
     }
 
     setEventDataCurrent(current: any) {
-        core.event.data.current = current;
+        this.event.data.current = current;
     }
 
     hasEventDataSelection() {
-        return 'selection' in core.event.data && isset(core.event.data.selection);
+        return 'selection' in this.event.data && isset(this.event.data.selection);
     }
 
     getEventDataSelection() {
-        return core.event.data.selection;
+        return this.event.data.selection;
     }
 
-    setEventDataSelection(selection: any) {
-        core.event.data.selection = selection;
+    @log
+    setEventDataSelection(selection?: number) {
+        console.log('before setEventDataSelection', this.event.data);
+        // this.updateEventData('selection', selection);
+        this.event.data.selection = selection;
+        console.log('after setEventDataSelection', this.event.data);
     }
 
     incEventDataSelection(inc: number = 1) {
-        core.event.data.selection += inc;
+        this.event.data.selection += inc;
     }
 
     decEventDataSelection(dec: number = 1) {
-        core.event.data.selection -= dec;
+        this.event.data.selection -= dec;
     }
 
-    getEventDataUI(): {
+    // getEventDataUI(): {
+    //     text?: string, choices?: string[];
+    // } | string {
+    //     return this.event.data.ui;
+    // }
+
+    getEventDataUITextAndChoices(): {
         text?: string, choices?: string[];
     } {
-        return core.event.data.ui;
+        return this.event.data.ui;
+    }
+
+    getEventDataUIText(): string {
+        return this.event.data.ui;
     }
 
     setEventDataUI(
-        text?: string, choices?: string[]
+        ui: { text?: string, choices?: string[] } | string
     ) {
-        core.event.data.ui = { text, choices };
+        this.event.data.ui = ui;
     }
 
     hasEventDataList() {
-        return 'list' in core.event.data && this.getEventDataList().length > 0;
+        return 'list' in this.event.data && this.getEventDataList().length > 0;
     }
 
     getEventDataList() {
-        return core.event.data['list']!;
+        return this.event.data['list']!;
     }
 
     unshiftEventDataList(item: any) {
-        unshift(core.event.data['list'], item);
+        unshift(this.event.data['list'], item);
     }
 
     clearEventDataList() {
-        core.event.data['list'] = [];
+        this.event.data['list'] = [];
     }
 
     setEventDataList(list: any[]) {
-        core.event.data['list'] = list;
+        this.event.data['list'] = list;
     }
 
     shiftEventDataList() {
-        return core.event.data['list'].shift();
+        return this.event.data['list'].shift();
     }
 
-    setEventCallback(callback: Function) {
-        core.event.callback = callback;
+    setEventCallback(callback?: Function) {
+        console.log('setEventCallback', callback);
+        this.event.callback = callback;
     }
 
     hasEventCallback() {
-        return isset(core.event.callback);
+        console.log('hasEventCallback', isset(this.event.callback), this.event.callback);
+        return isset(this.event.callback);
     }
 
     getEventCallback() {
-        return core.event.callback!;
+        console.log('getEventCallback', this.event.callback);
+        return this.event.callback!;
     }
 
     getEvent() {
-        return core.event;
+        return this.event;
     }
 
     hasFlag(key: string) {
-        return key in core.flags;
+        return key in this.flags;
     }
 
     setFlag(key: string, value: any) {
-        core.flags[key] = value;
+        this.flags[key] = value;
     }
 
     getFlag(key: string, defaultValue: any = undefined) {
-        if (key in core.flags) {
-            return core.flags[key];
+        if (key in this.flags) {
+            return this.flags[key];
         }
         return defaultValue;
     }
 
     getFlags() {
-        return core.flags;
+        return this.flags;
     }
 
     setFlags(flags: Record<string, any>) {
-        core.flags = flags;
+        this.flags = flags;
     }
 
 }
 
-export let core = new CoreStatus();
+export let core = CoreStatus.getInstance();
 

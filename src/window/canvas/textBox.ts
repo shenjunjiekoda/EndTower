@@ -1,4 +1,4 @@
-import { BLOCK_WIDTH, NPC_TEXTBOX_FONT, PLAYER_TEXTBOX_FONT, TEXTBOX_FONT, WHITE } from "../../common/constants";
+import { BLOCK_WIDTH, INIT_CANVAS_WIDTH, NPC_TEXTBOX_FONT, PLAYER_TEXTBOX_FONT, TEXTBOX_FONT, WHITE } from "../../common/constants";
 import { core } from "../../common/global";
 import { colorArrayToRGB, isset } from "../../common/util";
 import { eventManager } from "../../events/events";
@@ -17,7 +17,7 @@ export class TextBoxResolver {
 
     private id: string | null = null;
     private name: string | null = null;
-    private image: HTMLImageElement | null = null;
+    private images: HTMLImageElement[] | null = null;
     private icon = 0;
     private position = textAttribute.position;
 
@@ -78,17 +78,17 @@ export class TextBoxResolver {
                         if (enemiesMgr.hasEnemyId(this.id)) {
                             const enemy = enemiesMgr.getEnemyByID(this.id);
                             this.name = enemy!.name;
-                            this.image = imageMgr.getEnemy(this.name!);
+                            this.images = imageMgr.getEnemyImages(this.name!);
                         } else {
                             this.name = this.id;
                             this.id = 'npc';
-                            this.image = null;
                         }
                     }
                 } else {
                     this.id = 'npc';
                     this.name = people[0];
-                    this.image = imageMgr.getNPC(this.name);
+                    this.images = imageMgr.getNPCImages(people[1]);
+                    console.log('npc images: ', people[1], this.images);
                 }
             }
         }
@@ -135,17 +135,18 @@ export class TextBoxResolver {
     }
 
     draw() {
+        console.log("textboxresolver.draw");
         // 创建背景图案
+        console.log('ground image', imageMgr.getGround());
         const background = ui.createPattern(imageMgr.getGround()) as CanvasPattern;
-
         canvasAnimate.resetBoxAnimate();
         ui.clearRect();
 
         const left = 10;
-        const right = 416 - 2 * left;
+        const right = INIT_CANVAS_WIDTH - 2 * left;
 
         let content_left = left + 25;
-        if (this.id === 'player' || isset(this.icon))
+        if (this.id === 'player' || isset(this.images))
             content_left = left + 63;
 
         // 计算有效宽度
@@ -159,7 +160,7 @@ export class TextBoxResolver {
             let people = '';
             if (isset(this.name)) {
                 const floor = getFloorById()!;
-                people = i18next.t(floor.title) + " - " + name!;
+                people = i18next.t(floor.title) + " - " + this.name!;
             } else {
                 people = playerMgr.getPlayerName();
             }
@@ -252,9 +253,10 @@ export class TextBoxResolver {
             } else {
                 // 如果是其他角色，绘制角色名称和头像
                 ui.fillText(this.name!, content_left, top! + 30, undefined, NPC_TEXTBOX_FONT);
-                if (isset(this.icon)) {
+                if (isset(this.images)) {
                     ui.strokeRect(left + 15 - 1, top! + 40 - 1, 34, 34, undefined, 2);
                     canvasAnimate.resetBoxAnimate();
+                    console.log('textboxresolver box images', this.images);
                     canvasAnimate.pushBoxAnimateObj(
                         left + 15,
                         top! + 40,
@@ -262,7 +264,7 @@ export class TextBoxResolver {
                         BLOCK_WIDTH,
                         left + 15,
                         top! + 40,
-                        this.image!,
+                        this.images!,
                         this.icon,
                     );
                     canvasAnimate.drawBoxAnimate();
@@ -276,6 +278,7 @@ export class TextBoxResolver {
 
         // 绘制文本内容
         for (const line of contents) {
+            console.log('ui fill text line now');
             ui.fillText(line, content_left, content_top, undefined, TEXTBOX_FONT);
             content_top += 21;
         }

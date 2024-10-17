@@ -292,7 +292,7 @@ export function initBlockInfo(block: Block): void {
             block.event!.trigger = 'getItem';
         }
         if (!isset(block.event!.noPass)) {
-            if (['enemies', 'terrains', 'npcs', 'leina', 'jay'].includes(block.event!.type) || block.event!.type.endsWith('wall')) {
+            if (['enemies', 'terrains', 'npcs'].includes(block.event!.type) || block.event!.type.endsWith('wall')) {
                 block.event!.noPass = true;
             }
         }

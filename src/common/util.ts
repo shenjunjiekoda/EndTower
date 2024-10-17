@@ -112,7 +112,7 @@ export function colorArrayToRGB(color: number[]): string {
     const nowG = clamp(color[1]);
     const nowB = clamp(color[2]);
 
-    return `#${((1 << 24) + (nowR << 16) + (nowG << 8) + nowB).toString(16).padStart(6, '0')}`;
+    return `#${((1 << 24) + (nowR << 16) + (nowG << 8) + nowB).toString(16).slice(1)}`;
 }
 
 /**

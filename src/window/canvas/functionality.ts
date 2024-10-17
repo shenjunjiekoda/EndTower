@@ -16,7 +16,7 @@ import { config, staticConfig } from "../../common/config";
 import { hideDomNode } from "../../common/client";
 import { itemMgr } from "../../items/data";
 import { autoRoute } from "../../player/autoroute";
-import { audios } from "../../resource/audios";
+import { audioMgr } from "../../resource/audios";
 
 export function drawPagination(page: number, totalPage: number) {
     ui.setFont(PAGINATION_FONT);
@@ -82,7 +82,7 @@ export function drawEncyclopedia(index: number) {
         // 怪物
         canvasAnimate.pushBoxAnimateObj(
             22, 62 * i + 22, 42, 42,
-            27, 62 * i + 27, imageMgr.getEnemy(enemy.id!)
+            27, 62 * i + 27, imageMgr.getEnemyImages(enemy.id!)
         );
 
         ui.setTextAlign('center');
@@ -702,7 +702,7 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
     canvasAnimate.resetBoxAnimate();
     canvasAnimate.pushBoxAnimateObj(
         left + right - margin - 40, top + margin, boxWidth, boxWidth,
-        left + right - margin - 40 + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, imageMgr.getEnemy(enemyId)
+        left + right - margin - 40 + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, imageMgr.getEnemyImages(enemyId)
     );
     canvasAnimate.drawBoxAnimate();
 
@@ -780,7 +780,7 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
 
 
     let battleInterval = setInterval(() => {
-        audios.play('attack.ogg');
+        audioMgr.play('attack.ogg');
 
         if (turn == 0) {
             // 勇士攻击

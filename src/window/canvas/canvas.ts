@@ -20,8 +20,8 @@ class GameCanvas {
         this.internal = internal;
     }
 
-    @callertrace
-    @log
+    // @callertrace
+    // @log
     clearRect(x: number = 0, y: number = 0, width: number = INIT_CANVAS_WIDTH, height: number = INIT_CANVAS_WIDTH) {
         this.internal.clearRect(x, y, width, height);
     }
@@ -38,8 +38,8 @@ class GameCanvas {
         this.internal.fill(fillRule);
     }
 
-    @callertrace
-    @log
+    // @callertrace
+    // @log
     fillRect(x: number = 0, y: number = 0, width: number = INIT_CANVAS_WIDTH, height: number = INIT_CANVAS_WIDTH, fillStyle?: string | CanvasGradient | CanvasPattern) {
         if (isset(fillStyle)) {
             this.setFillStyle(fillStyle!);
@@ -98,8 +98,8 @@ class GameCanvas {
      * @param dw The width of the destination rectangle where the source image is drawn.
      * @param dh The height of the destination rectangle where the source image is drawn.
      */
-    @callertrace
-    @log
+    // @callertrace
+    // @log
     drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number) {
         // sx: number、sy: number: 源图像的起始坐标（x、y），表示要从图像的哪个位置开始绘制。
         // sw: number、sh: number: 源图像的宽度和高度，表示要从图像中裁剪的区域的大小。
@@ -144,6 +144,8 @@ class GameCanvas {
         this.internal.fillText(text, x, y);
     }
 
+    @log
+    @callertrace
     setFillStyle(style: string | CanvasGradient | CanvasPattern) {
         this.internal.fillStyle = style;
     }
@@ -417,22 +419,24 @@ class CanvasManager {
         canvasAnimate.resetGlobalAnimate();
 
         const groundId = getFloorById(floorId)!.defaultGround || "ground";
-        const blockImage = imageMgr.getGround(groundId);
+        const groundImage = imageMgr.getGround(groundId);
 
         for (let x = 0; x < CANVAS_BLOCK_WIDTH_CNT; x++) {
             for (let y = 0; y < CANVAS_BLOCK_WIDTH_CNT; y++) {
-                bg.drawImage(blockImage, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, x * BLOCK_WIDTH, y * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
+                bg.drawImage(groundImage, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, x * BLOCK_WIDTH, y * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
             }
         }
 
         for (let i = 0; i < mapBlocks.length; i++) {
             const block = mapBlocks[i];
+            console.log('block', i, block);
             if (isset(block.event) && !(isset(block.enable) && !block.enable)) {
                 const blkEvent = block.event!;
                 if (isset(blkEvent.id)) {
-                    const blockImage = imageMgr.get(blkEvent.type, blkEvent.id);
-                    event.drawImage(blockImage, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
-                    canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImage);
+                    const blockImages = imageMgr.getImages(blkEvent.type, blkEvent.id);
+                    console.log('draw image', blockImages);
+                    event.drawImage(blockImages[0], 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
+                    canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImages);
                 }
             }
         }
@@ -448,18 +452,14 @@ class CanvasManager {
     @log
     drawText(text?: string | string[], callback?: Function) {
         if (isset(text)) {
-            console.log('draw text: ', text);
+            console.log('draw text: ', text, callback);
             if (core.isEventSet() && core.getEventId() == 'action') {
                 eventManager.doOrInsertAction(text as string, undefined, undefined, callback);
                 return;
             }
 
-            let contents: string[] = [];
-            if (typeof text === 'string') {
-                contents = [text];
-            } else {
-                contents = text as string[];
-            }
+            let contents = typeof text === 'string' ? [text] : text as string[];
+            console.log(contents);
 
             core.setEventId('text');
             core.setEventDataList(contents);
@@ -504,7 +504,7 @@ class CanvasManager {
         ui.setAlpha(1);
         ui.setFillStyle(background);
 
-        core.setEventDataUI(content, choices);
+        core.setEventDataUI({ text: content, choices });
 
         const length = choices.length;
         const left = 85;
@@ -520,7 +520,7 @@ class CanvasManager {
 
         let id = null;
         let name = null;
-        let image = null;
+        let images = null;
 
         let contents = null;
         let content_left = left + 15;
@@ -538,25 +538,25 @@ class CanvasManager {
                             const enemy = enemiesMgr.getEnemyByID(id);
                             if (isset(enemy)) {
                                 name = enemy.name;
-                                image = imageMgr.getEnemy(name);
+                                images = imageMgr.getEnemyImages(name);
                             }
                             else {
                                 name = id;
                                 id = 'npc';
-                                image = null;
                             }
                         }
                     }
                     else {
                         id = 'npc';
                         name = ss[0];
-                        image = imageMgr.getNPC(ss[1]);
+                        images = imageMgr.getNPCImages(ss[1]);
                     }
                 }
             }
+            
             content = eventManager.resolveText(content!);
 
-            if (id == 'player' || isset(image)) {
+            if (id == 'player' || isset(images)) {
                 content_left = left + 60;
             }
 
@@ -587,7 +587,7 @@ class CanvasManager {
 
                 content_top = top + 55;
                 let title_offset = left + width / 2;
-                if (id == 'player' || isset(image)) {
+                if (id == 'player' || isset(images)) {
                     title_offset += 22;
                 }
 
@@ -603,9 +603,10 @@ class CanvasManager {
                 }
                 else {
                     ui.fillText(name!, title_offset, top + 27, GOLD, DEFAULT_TEXT_FONT);
-                    if (isset(image)) {
+                    if (isset(images)) {
                         ui.strokeRect(left + BLOCK_WIDTH / 2 - 2, top + BLOCK_WIDTH - 3, BLOCK_WIDTH + 2, BLOCK_WIDTH + 2, DARK_GRAY, 2);
                         canvasAnimate.resetBoxAnimate();
+                        
                         canvasAnimate.pushBoxAnimateObj(
                             left + BLOCK_WIDTH / 2 - 1,
                             top + BLOCK_WIDTH - 2,
@@ -613,7 +614,7 @@ class CanvasManager {
                             BLOCK_WIDTH,
                             left + BLOCK_WIDTH / 2 - 1,
                             top + BLOCK_WIDTH - 2,
-                            image!
+                            images!
                         );
                         canvasAnimate.drawBoxAnimate();
                     }
@@ -694,7 +695,7 @@ class CanvasManager {
         core.updateEventData('no', noCallback);
 
         console.log('core status event after update:', core.getEvent());
-        if (core.hasEventDataSelection() || core.getEventDataSelection() > 1) {
+        if (!core.hasEventDataSelection() || core.getEventDataSelection() > 1) {
             core.setEventDataSelection(1)
         }
         if (core.getEventDataSelection()! < 0) {
@@ -707,6 +708,7 @@ class CanvasManager {
         ui.setFillStyle(bg);
         ui.setFont(CONFIRMBOX_TEXT_FONT);
 
+        console.log('text', text);
         const contents = text.split('\n');
         let lines = contents.length;
         let max_length = 0;
@@ -756,7 +758,7 @@ class CanvasManager {
     fillPos(pos: { x: number, y: number }) {
         ui.fillRect(pos.x * BLOCK_WIDTH + 12, pos.y * BLOCK_WIDTH + 12, 8, 8, GRAY);
     }
-    
+
 }
 
 export let canvas = new CanvasManager();

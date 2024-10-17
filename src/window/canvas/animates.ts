@@ -1,6 +1,6 @@
 import { hideDomNode, setOpacity, showDomNode } from "../../common/client";
 import { BLOCK_WIDTH, DIRECTION_TO_POINT_MAP, FPS, OPACITY_STEP } from "../../common/constants";
-import { isset } from "../../common/util";
+import { callertrace, isset, log } from "../../common/util";
 import { animate, event, ui } from "./canvas";
 import { core } from "../../common/global";
 import { Block, getBlockAtPointOnFloor } from "../../floor/block";
@@ -18,7 +18,7 @@ interface AnimateObj {
 
     status: number;
     line: number;
-    image: HTMLImageElement;
+    images: HTMLImageElement[];
 }
 
 class GlobalAnimateObjs {
@@ -37,7 +37,7 @@ export interface BoxAnimateObj {
 
     status?: number;
 
-    image: HTMLImageElement;
+    images: HTMLImageElement[];
     line: number;
 };
 
@@ -144,8 +144,10 @@ class CanvasAnimateManager {
         this.boxAnimateObjs = [];
     }
 
-    pushBoxAnimateObj(bgx: number, bgy: number, bgheight: number, bgwidth: number, x: number, y: number, image: HTMLImageElement, line: number = 0) {
-        this.boxAnimateObjs.push({ bgx, bgy, bgheight, bgwidth, x, y, image, line });
+    @log
+    @callertrace
+    pushBoxAnimateObj(bgx: number, bgy: number, bgheight: number, bgwidth: number, x: number, y: number, images: HTMLImageElement[], line: number = 0) {
+        this.boxAnimateObjs.push({ bgx, bgy, bgheight, bgwidth, x, y, images, line });
     }
 
     removeGlobalAnimatePoint(x: number, y: number) {
@@ -169,8 +171,8 @@ class CanvasAnimateManager {
         this.globalAnimateObjs.fourAnimateObjs = [];
     }
 
-    pushGlobalAnimateObj(frameCnt: number, x: number, y: number, image: HTMLImageElement, line: number = 0) {
-        const animateObj: AnimateObj = { x, y, status: 0, line, image };
+    pushGlobalAnimateObj(frameCnt: number, x: number, y: number, images: HTMLImageElement[], line: number = 0) {
+        const animateObj: AnimateObj = { x, y, status: 0, line, images };
         if (frameCnt === 2) {
             this.globalAnimateObjs.twoAnimateObjs.push(animateObj);
             return;
@@ -239,7 +241,8 @@ class CanvasAnimateManager {
         }, timemills);
     }
 
-
+    @log
+    @callertrace
     closeUIPanel() {
         this.boxAnimateObjs = [];
         ui.clearRect();
@@ -254,7 +257,8 @@ class CanvasAnimateManager {
             obj.status = ((obj.status || 0) + 1) % 2;
             ui.clearRect(obj.bgx, obj.bgy, obj.bgheight, obj.bgwidth);
             ui.fillRect(obj.bgx, obj.bgy, obj.bgheight, obj.bgwidth, this.ctx.background!);
-            ui.drawImage(obj.image, obj.status * BLOCK_WIDTH, obj.line * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
+            console.log('draw box animate image: ', obj.images, obj.status)
+            ui.drawImage(obj.images[obj.status], 0, obj.line * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
         }
     }
 
@@ -372,9 +376,9 @@ class CanvasAnimateManager {
             block.enable = true;
             if (floorId == playerMgr.getFloorId() && isset(block.event)) {
                 const blkEvent = block.event!;
-                const blockImage = imageMgr.get(blkEvent.type, blkEvent.id);
-                event.drawImage(blockImage, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * block.x, BLOCK_WIDTH * block.y, BLOCK_WIDTH, BLOCK_WIDTH);
-                canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImage, 0);
+                const blockImages = imageMgr.getImages(blkEvent.type, blkEvent.id);
+                event.drawImage(blockImages[0], 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * block.x, BLOCK_WIDTH * block.y, BLOCK_WIDTH, BLOCK_WIDTH);
+                canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImages, 0);
                 canvasAnimate.syncGlobalAnimate();
             }
             statusBar.syncPlayerStatus();
@@ -506,7 +510,7 @@ class CanvasAnimateManager {
                     this.globalAnimateObjs.twoAnimateObjs.forEach((obj: any) => {
                         obj.status = (obj.status + 1) % 2;
                         event.clearRect(obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
-                        event.drawImage(obj.image, obj.status * BLOCK_WIDTH, obj.loc * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
+                        event.drawImage(obj.images[obj.status], 0, obj.loc * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
                     });
                     this.ctx.twoTime = timestamp;
                 }
@@ -516,7 +520,7 @@ class CanvasAnimateManager {
                     this.globalAnimateObjs.fourAnimateObjs.forEach((obj: any) => {
                         obj.status = (obj.status + 1) % 4;
                         event.clearRect(obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
-                        event.drawImage(obj.image, obj.status * BLOCK_WIDTH, obj.loc * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
+                        event.drawImage(obj.images[obj.status], 0, obj.loc * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
                     });
                     this.ctx.fourTime = timestamp;
                 }

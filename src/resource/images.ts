@@ -59,15 +59,15 @@ class ImageManager {
     }
 
     getImages(category: string, imgName: string): HTMLImageElement[] {
-        const key = `${category}/${imgName}`;
-        if (key in imageMgr) {
+        const key = `${category}/${imgName}.png`;
+        if (key in this.images) {
             return [this.images[key]];
         }
         let i = 1;
         let result: HTMLImageElement[] = [];
         while (true) {
             const imgKey = `${category}/${imgName}_${i}.png`;
-            if (imgKey in imageMgr) {
+            if (imgKey in this.images) {
                 result.push(this.images[imgKey]);
             }
             else {
@@ -98,6 +98,9 @@ class ImageManager {
         let category = lst.pop();
         if (!isset(imgName)) {
             imgName = imgPath;
+        }
+        if (imgPath.startsWith('./')) {
+            imgPath = imgPath.slice(2);
         }
 
         // console.log(`loading image: ${imgName} ...`);
@@ -131,12 +134,12 @@ class ImageManager {
     }
 
     private setPlayerManImage() {
-        this.images['player'] = this.images['players/player-man'];
+        this.images['player'] = this.images['players/player-man.png'];
         playerMgr.setPlayerIconHeight(this.images['player'].height / 4);
     }
 
     private setPlayerWomanImage() {
-        this.images['player'] = this.images['players/player-woman'];
+        this.images['player'] = this.images['players/player-woman.png'];
         playerMgr.setPlayerIconHeight(this.images['player'].height / 4);
     }
 

@@ -2,24 +2,24 @@ import { getDomNode } from "../common/client";
 import gameWindow, { ScreenMode } from "./gameWindow";
 import { core } from "../common/global";
 import { canvas, data, ui } from "./canvas/canvas";
-import { autoRoute } from "player/autoroute";
+import { autoRoute } from "../player/autoroute";
 import { BLOCK_WIDTH, CANVAS_BLOCK_WIDTH_CNT, DEFAULT_TIMEOUT_MILLS, GRAY, POINT_TO_DIRECTION_MAP } from "../common/constants";
 import { callertrace, isset, log, setLocalStorage, toInt } from "../common/util";
-import { PlayerLocation, playerMgr } from "player/data";
-import { eventManager } from "events/events";
+import { PlayerLocation, playerMgr } from "../player/data";
+import { eventManager } from "../events/events";
 import { canvasAnimate } from "./canvas/animates";
 import { drawAbout, drawBookDetail, drawCursor, drawEncyclopedia, drawHelp, drawOpenEncyclopedia, drawQuickShop, drawSettings, drawSLPanel, drawSwitchs, drawToolbox, drawTransport } from "./canvas/functionality";
 import { movePlayer } from "./canvas/player";
-import { route } from "player/route";
-import { itemMgr } from "items/data";
+import { route } from "../player/route";
+import { itemMgr } from "../items/data";
 import i18next from "i18next";
 import statusBar from "./statusBar";
-import { StairDirection, switchFloor } from "floor/switch";
+import { StairDirection, switchFloor } from "../floor/switch";
 import { config } from "../common/config";
 import { updateDamageDisplay } from "./canvas/damage";
 import menu from "./menu";
-import { shopMgr } from "shops/shops";
-import { getFloorById } from "floor/data";
+import { shopMgr } from "../shops/shops";
+import { getFloorById } from "../floor/data";
 
 interface ClickLoc {
     x: number;
@@ -169,12 +169,12 @@ class InteractManager {
             if (choices.length > 0) {
                 if (keycode == 38) {
                     core.decEventDataSelection();
-                    const ui = core.getEventDataUI();
+                    const ui = core.getEventDataUITextAndChoices();
                     canvas.drawChoices(ui.text, ui.choices);
                 }
                 if (keycode == 40) {
                     core.incEventDataSelection();
-                    const ui = core.getEventDataUI();
+                    const ui = core.getEventDataUITextAndChoices();
                     canvas.drawChoices(ui.text, ui.choices);
                 }
             }
@@ -185,13 +185,13 @@ class InteractManager {
         if (keycode == 38) {
             // 上
             core.decEventDataSelection();
-            const ui = core.getEventDataUI();
+            const ui = core.getEventDataUITextAndChoices();
             canvas.drawChoices(ui.text, ui.choices);
         }
         if (keycode == 40) {
             // 下
             core.incEventDataSelection();
-            const ui = core.getEventDataUI();
+            const ui = core.getEventDataUITextAndChoices();
             canvas.drawChoices(ui.text, ui.choices);
         }
     }
@@ -420,14 +420,14 @@ class InteractManager {
             // 左
             console.log('set selection to 0 here1\n');
             core.setEventDataSelection(0);
-            canvas.drawConfirmBox(core.getEventDataUI() as string, core.getEventData('yes'), core.getEventData('no'));
+            canvas.drawConfirmBox(core.getEventDataUIText(), core.getEventData('yes'), core.getEventData('no'));
         }
 
         if (keyCode == 39) {
             // 右
             console.log('set selection to 1 here1\n');
             core.setEventDataSelection(1);
-            canvas.drawConfirmBox(core.getEventDataUI() as string, core.getEventData('yes'), core.getEventData('no'));
+            canvas.drawConfirmBox(core.getEventDataUIText(), core.getEventData('yes'), core.getEventData('no'));
         }
 
         console.log('coreStatus.event?.selection: ' + core.getEventDataSelection())
@@ -600,12 +600,12 @@ class InteractManager {
         if (keyCode == 38) {
             // 上
             core.decEventDataSelection();
-            canvas.drawChoices(core.getEventDataUI().text, core.getEventDataUI().choices);
+            canvas.drawChoices(core.getEventDataUITextAndChoices().text, core.getEventDataUITextAndChoices().choices);
         }
         if (keyCode == 40) {
             // 下
             core.incEventDataSelection();
-            canvas.drawChoices(core.getEventDataUI().text, core.getEventDataUI().choices);
+            canvas.drawChoices(core.getEventDataUITextAndChoices().text, core.getEventDataUITextAndChoices().choices);
         }
     }
 
@@ -615,7 +615,7 @@ class InteractManager {
             canvasAnimate.closeUIPanel();
             return;
         }
-        let choices = core.getEventDataUI().choices;
+        let choices = core.getEventDataUITextAndChoices().choices;
         if ([13, BLOCK_WIDTH, 67].includes(keyCode)) {
             // 13: 确定 BLOCK_WIDTH:空格 67:C
             let topIndex = 6 - toInt((choices!.length - 1) / 2);
@@ -629,12 +629,12 @@ class InteractManager {
         if (keyCode == 38) {
             // 上
             core.decEventDataSelection();
-            canvas.drawChoices(core.getEventDataUI().text, core.getEventDataUI().choices);
+            canvas.drawChoices(core.getEventDataUITextAndChoices().text, core.getEventDataUITextAndChoices().choices);
         }
         if (keyCode == 40) {
             // 下
             core.incEventDataSelection();
-            canvas.drawChoices(core.getEventDataUI().text, core.getEventDataUI().choices);
+            canvas.drawChoices(core.getEventDataUITextAndChoices().text, core.getEventDataUITextAndChoices().choices);
         }
     }
 
@@ -647,7 +647,7 @@ class InteractManager {
             drawSettings();
             return;
         }
-        let choices = core.getEventDataUI().choices as string[];
+        let choices = core.getEventDataUITextAndChoices().choices as string[];
         if ([13, BLOCK_WIDTH, 67].includes(keyCode)) {
             let topIndex = 6 - toInt((choices.length - 1) / 2);
             console.log('keyup switches topIndex', topIndex)
@@ -658,7 +658,7 @@ class InteractManager {
     clickSwitchs(x: number, y: number) {
         console.log('click switchs', x, y);
         if (x < 5 || x > 7) return;
-        let choices = core.getEventDataUI().choices as string[];
+        let choices = core.getEventDataUITextAndChoices().choices as string[];
         let topIndex = 6 - toInt((choices.length - 1) / 2);
         console.log('topIndex', topIndex)
         if (y >= topIndex && y < topIndex + choices.length) {
@@ -694,7 +694,7 @@ class InteractManager {
 
     clickSettings(x: number, y: number) {
         if (x < 5 || x > 7) return;
-        let choices = core.getEventDataUI().choices as string[];
+        let choices = core.getEventDataUITextAndChoices().choices as string[];
         let topIndex = 6 - toInt((choices.length - 1) / 2);
         if (y >= topIndex && y < topIndex + choices.length) {
             let selection = y - topIndex;
@@ -1091,13 +1091,13 @@ class InteractManager {
         if (keyCode == 38) {
             // 上
             core.decEventDataSelection();
-            const ui = core.getEventDataUI();
+            const ui = core.getEventDataUITextAndChoices();
             canvas.drawChoices(ui.text, ui.choices);
         }
         if (keyCode == 40) {
             // 下
             core.incEventDataSelection();
-            const ui = core.getEventDataUI();
+            const ui = core.getEventDataUITextAndChoices();
             canvas.drawChoices(ui.text, ui.choices);
         }
     }
@@ -1109,7 +1109,7 @@ class InteractManager {
             drawSettings();
             return;
         }
-        const ui = core.getEventDataUI();
+        const ui = core.getEventDataUITextAndChoices();
         let choices = ui.choices as string[];
         if ([13, BLOCK_WIDTH, 67].includes(keyCode)) {
             // 13/空格/C
@@ -1492,12 +1492,12 @@ class InteractManager {
 
         if (keyCode == 38) {
             core.decEventDataSelection();
-            const ui = core.getEventDataUI();
+            const ui = core.getEventDataUITextAndChoices();
             canvas.drawChoices(ui.text, ui.choices);
         }
         if (keyCode == 40) {
             core.incEventDataSelection();
-            const ui = core.getEventDataUI();
+            const ui = core.getEventDataUITextAndChoices();
             canvas.drawChoices(ui.text, ui.choices);
         }
     }
@@ -1573,8 +1573,8 @@ class InteractManager {
     }
 
     onMouseMoveHandler(event: MouseEvent) {
-        console.log('onmousemove started: ', core.isStarted());
-        console.log('onmousemove event: ', core.getEvent());
+        // console.log('onmousemove started: ', core.isStarted());
+        // console.log('onmousemove event: ', core.getEvent());
 
         try {
             // 阻止事件向上冒泡，确保这个事件不会被其他
@@ -1691,25 +1691,3 @@ class InteractManager {
 
 export let interact = new InteractManager();
 
-
-document.body.onkeydown = interact.keyDownHandler;
-document.body.onkeyup = interact.keyUpHandler;
-window.onorientationchange = () => {
-    gameWindow.resize();
-};
-
-getDomNode('data').onmousedown = interact.mouseDownHandler;
-getDomNode('data').onmouseup = interact.mouseUpHandler;
-getDomNode('data').onmousemove = interact.onMouseMoveHandler;
-
-getDomNode('data').ontouchstart = interact.touchStartHandler;
-getDomNode('data').ontouchend = interact.touchEndHandler;
-getDomNode('data').ontouchmove = interact.onTouchMoveHandler;
-
-getDomNode('encyclopediaToolImg').onclick = interact.encyclopediaOnClickHandler;
-getDomNode('transporterToolImg').onclick = interact.transporterOnClickHandler;
-getDomNode('noteBookToolImg').onclick = interact.noteBookOnClickHandler;
-getDomNode('toolBoxToolImg').onclick = interact.toolBoxOnClickHandler;
-getDomNode('saveToolImg').onclick = interact.saveImageOnClickHandler;
-getDomNode('loadToolImg').onclick = interact.loadImageOnClickHandler;
-getDomNode('settingToolImg').onclick = interact.settingsOnClickHandler;

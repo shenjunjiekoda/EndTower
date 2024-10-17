@@ -73,14 +73,14 @@ export const base_player_data: PlayerData = {
     loc: {
         direction: "up",
         x: 6,
-        y: 10,
+        y: 8,
     },
     items: {
         keys: {
-            yellowKey: 0,
-            blueKey: 0,
-            redKey: 0,
-            greenKey: 0,
+            yellow: 0,
+            blue: 0,
+            red: 0,
+            green: 0,
         },
         constants: {},
         tools: {}
@@ -94,6 +94,7 @@ class PlayerManager {
     private player_data: PlayerData = { ...base_player_data };
 
     // 根据选择的难度初始化玩家数据 | Init player data by selected difficulty
+    @log
     setupPlayerDataByGameLevel(level: GameLevel): void {
         this.player_data = { ...base_player_data };
         switch (level) {
@@ -101,16 +102,16 @@ class PlayerManager {
                 this.player_data.hp += 200;
                 this.player_data.attack += 3;
                 this.player_data.defense += 3;
-                this.player_data.items.keys.yellowKey += 1;
-                this.player_data.items.keys.blueKey += 1;
-                this.player_data.items.keys.redKey += 1;
+                this.player_data.items.keys.yellow += 1;
+                this.player_data.items.keys.blue += 1;
+                this.player_data.items.keys.red += 1;
                 break;
             case GameLevel.Normal:
-                this.player_data.items.keys.yellowKey += 1;
-                this.player_data.items.keys.blueKey += 1;
+                this.player_data.items.keys.yellow += 1;
+                this.player_data.items.keys.blue += 1;
                 break;
             case GameLevel.Hard:
-                this.player_data.items.keys.yellowKey += 1;
+                this.player_data.items.keys.yellow += 1;
                 break;
         }
     }
