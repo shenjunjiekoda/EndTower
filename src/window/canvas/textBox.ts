@@ -3,7 +3,7 @@ import { core } from "../../common/global";
 import { colorArrayToRGB, isset } from "../../common/util";
 import { eventManager } from "../../events/events";
 import { playerMgr } from "../../player/data";
-import { getPlayerIconLineOfDirection, getPlayerIconStillOfDirection, images } from "../../resource/images";
+import { getPlayerIconLineOfDirection, getPlayerIconStillOfDirection, imageMgr } from "../../resource/images";
 import { textAttribute } from "../../window/textAttribute";
 import { canvas, getCanvasContext, ui } from "./canvas";
 import { canvasAnimate } from "./animates";
@@ -78,7 +78,7 @@ export class TextBoxResolver {
                         if (enemiesMgr.hasEnemyId(this.id)) {
                             const enemy = enemiesMgr.getEnemyByID(this.id);
                             this.name = enemy!.name;
-                            this.image = images.getEnemy(this.name!);
+                            this.image = imageMgr.getEnemy(this.name!);
                         } else {
                             this.name = this.id;
                             this.id = 'npc';
@@ -88,7 +88,7 @@ export class TextBoxResolver {
                 } else {
                     this.id = 'npc';
                     this.name = people[0];
-                    this.image = images.getNPC(this.name);
+                    this.image = imageMgr.getNPC(this.name);
                 }
             }
         }
@@ -136,7 +136,7 @@ export class TextBoxResolver {
 
     draw() {
         // 创建背景图案
-        const background = ui.createPattern(images.getGround()) as CanvasPattern;
+        const background = ui.createPattern(imageMgr.getGround()) as CanvasPattern;
 
         canvasAnimate.resetBoxAnimate();
         ui.clearRect();
@@ -248,7 +248,7 @@ export class TextBoxResolver {
                 ui.fillText(playerMgr.getPlayerName(), content_left, top! + 30, undefined, PLAYER_TEXTBOX_FONT);
                 ui.clearRect(left + 15, top! + 40, BLOCK_WIDTH, playerHeight);
                 ui.fillRect(left + 15, top! + 40, BLOCK_WIDTH, playerHeight, background);
-                ui.drawImage(images.getPlayer(), getPlayerIconStillOfDirection('down') * BLOCK_WIDTH, getPlayerIconLineOfDirection('down'), BLOCK_WIDTH, playerHeight, left + 15, top! + 40, BLOCK_WIDTH, playerHeight);
+                ui.drawImage(imageMgr.getPlayer(), getPlayerIconStillOfDirection('down') * BLOCK_WIDTH, getPlayerIconLineOfDirection('down'), BLOCK_WIDTH, playerHeight, left + 15, top! + 40, BLOCK_WIDTH, playerHeight);
             } else {
                 // 如果是其他角色，绘制角色名称和头像
                 ui.fillText(this.name!, content_left, top! + 30, undefined, NPC_TEXTBOX_FONT);

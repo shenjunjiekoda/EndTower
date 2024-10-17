@@ -3,7 +3,7 @@ import { canvas, data, getCanvasContext, ui } from "./canvas";
 import i18next from "i18next";
 import { core } from "../../common/global";
 import { enemiesMgr } from "../../enemies/data";
-import { getPlayerIconLineOfDirection, getPlayerIconStillOfDirection, images } from "../../resource/images";
+import { getPlayerIconLineOfDirection, getPlayerIconStillOfDirection, imageMgr } from "../../resource/images";
 import { formatDate, getLocalStorage, isset, setLocalStorage, toInt } from "../../common/util";
 import { canvasAnimate } from "./animates";
 import { PlayerLocation, playerMgr } from "../../player/data";
@@ -43,7 +43,7 @@ export function drawEncyclopedia(index: number) {
 
     ui.clearRect();
     ui.setAlpha(1);
-    ui.setFillStyle(ui.createPattern(images.getGround())!);
+    ui.setFillStyle(ui.createPattern(imageMgr.getGround())!);
     ui.fillRect();
 
     ui.setAlpha(0.6);
@@ -82,7 +82,7 @@ export function drawEncyclopedia(index: number) {
         // 怪物
         canvasAnimate.pushBoxAnimateObj(
             22, 62 * i + 22, 42, 42,
-            27, 62 * i + 27, images.getEnemy(enemy.id!)
+            27, 62 * i + 27, imageMgr.getEnemy(enemy.id!)
         );
 
         ui.setTextAlign('center');
@@ -210,7 +210,7 @@ export function drawThumbnail(floorId: number, canvasId: string, blocks: Block[]
     c.clearRect(x, y, size, size);
     const floor = getFloorById(floorId)!;
     let groundId = isset(floor.defaultGround) ? floor.defaultGround : "ground";
-    let blockImage = images.getGround(groundId);
+    let blockImage = imageMgr.getGround(groundId);
 
     let persize = size / CANVAS_BLOCK_WIDTH_CNT;
     for (let i = 0; i < CANVAS_BLOCK_WIDTH_CNT; i++) {
@@ -224,7 +224,7 @@ export function drawThumbnail(floorId: number, canvasId: string, blocks: Block[]
         let block: Block = blocks[i];
         if (isset(block.event) && !(isset(block.enable) && !(block.enable!))) {
             if (core.getEventId() != 'normalBlock') {
-                let blockImage = images.get(block.event!.type, block.event!.id);
+                let blockImage = imageMgr.get(block.event!.type, block.event!.id);
                 c.drawImage(blockImage, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, x + block.x * persize, y + block.y * persize, persize, persize);
             }
         }
@@ -233,7 +233,7 @@ export function drawThumbnail(floorId: number, canvasId: string, blocks: Block[]
     if (isset(playerLoc)) {
         let height = playerMgr.getPlayerIconHeight();
         let realHeight = persize * height / BLOCK_WIDTH;
-        c.drawImage(images.getPlayer(), getPlayerIconStillOfDirection(playerLoc!.direction) * BLOCK_WIDTH, getPlayerIconLineOfDirection(playerLoc!.direction) * height, BLOCK_WIDTH, height, x + persize * playerLoc!.x, y + persize * playerLoc!.y + persize - realHeight, persize, realHeight);
+        c.drawImage(imageMgr.getPlayer(), getPlayerIconStillOfDirection(playerLoc!.direction) * BLOCK_WIDTH, getPlayerIconLineOfDirection(playerLoc!.direction) * height, BLOCK_WIDTH, height, x + persize * playerLoc!.x, y + persize * playerLoc!.y + persize - realHeight, persize, realHeight);
     }
 }
 
@@ -540,7 +540,7 @@ export function drawToolbox(index?: number) {
     ui.setTextAlign('right');
     for (let i = 0; i < tools.length; i++) {
         let tool = tools[i];
-        let image = images.getItem(tool);
+        let image = imageMgr.getItem(tool);
         if (i < 6) {
             ui.drawImage(image, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH / 2 * (4 * i + 1) + 5, 144 + 5, BLOCK_WIDTH, BLOCK_WIDTH);
             ui.fillText(playerMgr.getItemCount(tool), BLOCK_WIDTH / 2 * (4 * i + 1) + 40, 144 + 38, WHITE, "bold 14px Verdana");
@@ -558,7 +558,7 @@ export function drawToolbox(index?: number) {
 
     for (let i = 0; i < constants.length; i++) {
         let constant = constants[i];
-        let image = images.getItem(constant);
+        let image = imageMgr.getItem(constant);
         if (i < 6) {
             ui.drawImage(image, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH / 2 * (4 * i + 1) + 5, 304 + 5, BLOCK_WIDTH, BLOCK_WIDTH)
             if (selectId == constant)
@@ -644,7 +644,7 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
 
     let specialTexts = enemiesMgr.getSpecialText(enemyId);
 
-    let bg = ui.createPattern(images.getGround());
+    let bg = ui.createPattern(imageMgr.getGround());
 
     ui.clearRect();
     let left = 10;
@@ -696,13 +696,13 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
     // 图标
     ui.clearRect(left + margin, top + margin, boxWidth, playerHeight + boxWidth - BLOCK_WIDTH);
     ui.fillRect(left + margin, top + margin, boxWidth, playerHeight + boxWidth - BLOCK_WIDTH, bg!);
-    ui.drawImage(images.getPlayer(), getPlayerIconStillOfDirection('down') * BLOCK_WIDTH, getPlayerIconLineOfDirection('down') * playerHeight, BLOCK_WIDTH, playerHeight, left + margin + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, BLOCK_WIDTH, playerHeight);
+    ui.drawImage(imageMgr.getPlayer(), getPlayerIconStillOfDirection('down') * BLOCK_WIDTH, getPlayerIconLineOfDirection('down') * playerHeight, BLOCK_WIDTH, playerHeight, left + margin + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, BLOCK_WIDTH, playerHeight);
 
     // 怪物的
     canvasAnimate.resetBoxAnimate();
     canvasAnimate.pushBoxAnimateObj(
         left + right - margin - 40, top + margin, boxWidth, boxWidth,
-        left + right - margin - 40 + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, images.getEnemy(enemyId)
+        left + right - margin - 40 + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, imageMgr.getEnemy(enemyId)
     );
     canvasAnimate.drawBoxAnimate();
 

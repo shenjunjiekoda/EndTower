@@ -1,14 +1,15 @@
-import { initFloorMaps } from "../floor/data";
+import { initFloorMaps, initFloors } from "../floor/data";
 import { initTextAttribute } from "./textAttribute";
 import { log, logExecutionTime } from "../common/util";
 import { getDomNode, hideDomNode, setBackGroundColor, setInnerHtml, setNonOpaque, setOpacity, showDomNode } from "../common/client";
 import { BLACK } from "../common/constants";
 import { canvas, event, ui } from "./canvas/canvas";
 import { canvasAnimate } from "./canvas/animates";
-import i18next from "i18next";
+import i18next from "../common/i18n";
 import { eventManager } from "../events/events";
 import { config } from "../common/config";
-import { images } from "../resource/images";
+import { imageMgr } from "../resource/images";
+import gameWindow from "./gameWindow";
 
 class Menu {
     static instance: Menu;
@@ -26,14 +27,13 @@ class Menu {
         }
     }
 
-    
+
 
     @log
     reload() {
         // initGlobalConfig();
         // coreStatus.init();
         // initCanvasContexts();
-        // initFloors();
         // initImages();
         // initEnemys();
         // initEvents();
@@ -42,9 +42,11 @@ class Menu {
         // initAnimates();
         // initShops();
         canvasAnimate.setRequestAnimationFrame();
+        logExecutionTime(initFloors)();
         logExecutionTime(initFloorMaps)();
         logExecutionTime(initTextAttribute)();
-        logExecutionTime(eventManager.initTriggerEvents)();
+
+        eventManager.initTriggerEvents();
     }
 
     show() {
@@ -81,8 +83,8 @@ class Menu {
     }
 
     private clearStatus() {
-        // clearAllInterval();
-        // gameWindow.resize();
+        canvas.clearAllInterval();
+        gameWindow.resize();
     }
 
     private showMenuAfterLoading() {

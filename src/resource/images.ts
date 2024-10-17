@@ -1,12 +1,13 @@
 import { importAll, isset, logExecutionTime } from "../common/util";
 import { playerMgr } from "../player/data";
 
+const IMAGE_OUTPUT_DIR = 'images';
+
 class ImageManager {
     private images: Record<string, HTMLImageElement>;
 
     constructor() {
         this.images = {};
-        logExecutionTime(this.initImages)();
     }
 
     getGround(id: string = 'ground') {
@@ -46,27 +47,27 @@ class ImageManager {
     }
 
     get(category: string, imgName: string): HTMLImageElement {
-        let key = `${category}/${imgName}`;
-        if (key in images) {
+        let key = `${category}/${imgName}.png`;
+        if (key in this.images) {
             return this.images[key];
         }
-        key = `${category}/${imgName}_1`;
-        if (key in images) {
+        key = `${category}/${imgName}_1.png`;
+        if (key in this.images) {
             return this.images[key];
         }
-        throw new Error(`Image ${category}/${imgName} not found`);
+        throw new Error(`Image ${category}/${imgName}.png not found`);
     }
 
     getImages(category: string, imgName: string): HTMLImageElement[] {
         const key = `${category}/${imgName}`;
-        if (key in images) {
+        if (key in imageMgr) {
             return [this.images[key]];
         }
         let i = 1;
         let result: HTMLImageElement[] = [];
         while (true) {
-            const imgKey = `${category}/${imgName}_${i}`;
-            if (imgKey in images) {
+            const imgKey = `${category}/${imgName}_${i}.png`;
+            if (imgKey in imageMgr) {
                 result.push(this.images[imgKey]);
             }
             else {
@@ -78,13 +79,15 @@ class ImageManager {
     }
 
     initImages() {
-        const imgs = importAll(require.context('../../public/images', false, /\.(png|jpe?g|gif)$/));
-        imgs.forEach((img) => {
-            console.log(`importing image: ${img}`);
-            const path = img as string;
+        console.log('loading images...');
+        const imgs = importAll(require.context('../../public/images', true, /\.(png|jpe?g|gif)$/));
+        console.log('all images: ', imgs);
+        imgs.forEach(({ path, module }) => {
+            // console.log(`importing image: ${path}`);
             this.loadImage(path, (category, imgName, image) => {
-                console.log(`loaded image: ${category}/${imgName}`, image);
-                this.images[`${category}/${imgName}`] = image;
+                const key = `${category}/${imgName}`;
+                // console.log(`loaded image: ${key}`, image);
+                this.images[key] = image;
             }, path.toLowerCase().includes('ground'));
         });
     }
@@ -97,11 +100,11 @@ class ImageManager {
             imgName = imgPath;
         }
 
-        console.log(`loading image: ${imgName} ...`);
+        // console.log(`loading image: ${imgName} ...`);
 
         try {
             let image: HTMLImageElement = new Image();
-            image.src = imgPath;
+            image.src = `${IMAGE_OUTPUT_DIR}/${imgPath}`;
 
             if (callbackDirectly) {
                 if (isset(callback)) {
@@ -148,7 +151,7 @@ class ImageManager {
 }
 
 
-export let images = new ImageManager();
+export let imageMgr = new ImageManager();
 
 
 interface PlayerIcon {

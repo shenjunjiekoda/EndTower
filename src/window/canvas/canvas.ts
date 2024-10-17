@@ -2,7 +2,7 @@ import { getDomNodesByClass } from "../../common/client";
 import { BLACK, BLOCK_WIDTH, CANVAS_BLOCK_WIDTH_CNT, CHOICE_TEXT_FONT, CHOICEBOX_FONT, CONFIRMBOX_CONFIRM_TEXT_FONT, CONFIRMBOX_TEXT_FONT, DARK_GRAY, DEFAULT_INTERVAL_MILLS, DEFAULT_TEXT_FONT, DEFAULT_TIMEOUT_MILLS, GOLD, GRAY, INIT_CANVAS_WIDTH, ITEM_TIP_TIMEOUT_MILLS, OPACITY_STEP, TIP_FONT, WHITE } from "../../common/constants";
 import { callertrace, isset, log } from "../../common/util";
 import { getAllFloorIds, getFloorById, getMapData } from "../../floor/data";
-import { getPlayerIconLineOfDirection, getPlayerIconStillOfDirection, images } from "../../resource/images";
+import { getPlayerIconLineOfDirection, getPlayerIconStillOfDirection, imageMgr } from "../../resource/images";
 import { canvasAnimate } from "./animates";
 import { config } from "../../common/config";
 import { playerMgr } from "../../player/data";
@@ -372,7 +372,7 @@ class CanvasManager {
             data.fillRect(topX, topY, width, height);
 
             if (isset(itemId)) {
-                data.drawImage(images.getItem(itemId!), 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, 12, 12, BLOCK_WIDTH, BLOCK_WIDTH);
+                data.drawImage(imageMgr.getItem(itemId!), 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, 12, 12, BLOCK_WIDTH, BLOCK_WIDTH);
             }
             data.fillText(tip, textX, textY, "#FFF");
 
@@ -417,7 +417,7 @@ class CanvasManager {
         canvasAnimate.resetGlobalAnimate();
 
         const groundId = getFloorById(floorId)!.defaultGround || "ground";
-        const blockImage = images.getGround(groundId);
+        const blockImage = imageMgr.getGround(groundId);
 
         for (let x = 0; x < CANVAS_BLOCK_WIDTH_CNT; x++) {
             for (let y = 0; y < CANVAS_BLOCK_WIDTH_CNT; y++) {
@@ -430,7 +430,7 @@ class CanvasManager {
             if (isset(block.event) && !(isset(block.enable) && !block.enable)) {
                 const blkEvent = block.event!;
                 if (isset(blkEvent.id)) {
-                    const blockImage = images.get(blkEvent.type, blkEvent.id);
+                    const blockImage = imageMgr.get(blkEvent.type, blkEvent.id);
                     event.drawImage(blockImage, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
                     canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImage);
                 }
@@ -498,7 +498,7 @@ class CanvasManager {
     @log
     @callertrace
     drawChoices(content?: string, choices: any[] = []) {
-        const background = ui.createPattern(images.getGround())!;
+        const background = ui.createPattern(imageMgr.getGround())!;
 
         ui.clearRect();
         ui.setAlpha(1);
@@ -538,7 +538,7 @@ class CanvasManager {
                             const enemy = enemiesMgr.getEnemyByID(id);
                             if (isset(enemy)) {
                                 name = enemy.name;
-                                image = images.getEnemy(name);
+                                image = imageMgr.getEnemy(name);
                             }
                             else {
                                 name = id;
@@ -550,7 +550,7 @@ class CanvasManager {
                     else {
                         id = 'npc';
                         name = ss[0];
-                        image = images.getNPC(ss[1]);
+                        image = imageMgr.getNPC(ss[1]);
                     }
                 }
             }
@@ -599,7 +599,7 @@ class CanvasManager {
                     ui.fillRect(left + BLOCK_WIDTH / 2 - 1, top + BLOCK_WIDTH - 2, BLOCK_WIDTH, playerHeight, background);
                     const playerDownIconLine = getPlayerIconLineOfDirection('down');
                     const playerDownIconStill = getPlayerIconStillOfDirection('down');
-                    ui.drawImage(images.getPlayer(), playerDownIconStill * BLOCK_WIDTH, playerDownIconLine * playerHeight, BLOCK_WIDTH, playerHeight, left + BLOCK_WIDTH / 2 - 1, top + BLOCK_WIDTH - 2, BLOCK_WIDTH, playerHeight);
+                    ui.drawImage(imageMgr.getPlayer(), playerDownIconStill * BLOCK_WIDTH, playerDownIconLine * playerHeight, BLOCK_WIDTH, playerHeight, left + BLOCK_WIDTH / 2 - 1, top + BLOCK_WIDTH - 2, BLOCK_WIDTH, playerHeight);
                 }
                 else {
                     ui.fillText(name!, title_offset, top + 27, GOLD, DEFAULT_TEXT_FONT);
@@ -701,7 +701,7 @@ class CanvasManager {
             core.setEventDataSelection(0);
         }
 
-        let bg = ui.createPattern(images.getGround(), 'repeat')!;
+        let bg = ui.createPattern(imageMgr.getGround(), 'repeat')!;
         ui.clearRect();
         ui.setAlpha(1);
         ui.setFillStyle(bg);

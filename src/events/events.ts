@@ -20,7 +20,7 @@ import menu from "../window/menu";
 import statusBar from "../window/statusBar";
 import { textAttribute } from "../window/textAttribute";
 import { Shop, shopMgr } from "../shops/shops";
-import { images } from "../resource/images";
+import { imageMgr } from "../resource/images";
 import { route } from "../player/route";
 import { notebook } from "../items/notebook";
 import gameWindow from "../window/gameWindow";
@@ -649,7 +649,7 @@ class EventManager {
                 return;
             }
             event.clearRect(BLOCK_WIDTH * x, BLOCK_WIDTH * y, BLOCK_WIDTH, BLOCK_WIDTH);
-            event.drawImage(images.getAnimateImages(doorId)[state], 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * x, BLOCK_WIDTH * y, BLOCK_WIDTH, BLOCK_WIDTH);
+            event.drawImage(imageMgr.getAnimateImages(doorId)[state], 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * x, BLOCK_WIDTH * y, BLOCK_WIDTH, BLOCK_WIDTH);
         }, speed)
 
     }
@@ -939,7 +939,7 @@ class EventManager {
         canvas.clearAllInterval();
 
         playerMgr.setPlayerData(clone(playerData));
-        images.setPlayerImage();
+        imageMgr.setPlayerImage();
         core.setStarted(true);
 
         playerMgr.setFloorId(floorId);
@@ -1062,7 +1062,7 @@ class EventManager {
 
             const block: Block = getBlockAtPointOnFloor(x, y)!.block;
             snipe.blockIcon = 0;
-            snipe.blockImage = images.get(block.event!.type, block.event!.id);
+            snipe.blockImage = imageMgr.get(block.event!.type, block.event!.id);
             let damageNum: number = enemiesMgr.getDamage(block.event!.id);
 
             const player_hp = playerMgr.getPlayerHP();

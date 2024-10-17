@@ -124,7 +124,7 @@ export interface MapData {
 
 export function loadFloor(floorId: number, map?: number[][]): MapData {
     const floor: Floor = getFloorById(floorId)!;
-    console.log('load current floor: ', floorId, map, floor);
+    // console.log('load current floor: ', floorId, map, floor);
 
     let data: MapData = {
         floorId: floor.floorId,
@@ -152,6 +152,7 @@ export function loadFloor(floorId: number, map?: number[][]): MapData {
 let floorMaps: Record<number, MapData> = {};
 
 export function initFloorMaps() {
+    console.log('init floor maps');
     floorMaps = {};
     const floorIds = getAllFloorIds();
     for (let i = 0; i < floorIds.length; i++) {

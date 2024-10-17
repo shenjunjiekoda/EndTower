@@ -33,7 +33,7 @@ module.exports = {
                 test: /\.(png|jpg|gif)$/,
                 type: 'asset/resource',
                 generator: {
-                    filename: 'images/[name][ext]',
+                    filename: 'images/[path][name].[ext]',
                 }
                 // use: [
                 //     {

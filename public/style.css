@@ -296,7 +296,7 @@ body {
     display: none;
 
     /* 背景图 | Background image */
-    background: url(images/status_bar/bg.png);
+    background: url(images/statusBar/bg.png);
     background-size: auto 100%;
 
     width: 30px;
@@ -394,7 +394,7 @@ body {
     /* 默认隐藏 | Hidden by default */
     display: none;
 
-    background: url(images/tool_bar/bg.png);
+    background: url(images/toolBar/bg.png);
     background-size: auto 100%;
 
     position: absolute;

@@ -5,7 +5,7 @@ import { animate, event, ui } from "./canvas";
 import { core } from "../../common/global";
 import { Block, getBlockAtPointOnFloor } from "../../floor/block";
 import { removeBlock } from "./map";
-import { images } from "../../resource/images";
+import { imageMgr } from "../../resource/images";
 import { playerMgr } from "../../player/data";
 import statusBar from "../../window/statusBar";
 import { animates, AnimateSingleFrame } from "../../resource/animates";
@@ -282,7 +282,7 @@ class CanvasAnimateManager {
 
         const block = blockOpt!.block;
         console.log('block: ', block);
-        const blockImages = images.getImages(block.event!.type, block.event!.id);
+        const blockImages = imageMgr.getImages(block.event!.type, block.event!.id);
 
         let opac = 1;
         animate.setOpacity(opac);
@@ -372,7 +372,7 @@ class CanvasAnimateManager {
             block.enable = true;
             if (floorId == playerMgr.getFloorId() && isset(block.event)) {
                 const blkEvent = block.event!;
-                const blockImage = images.get(blkEvent.type, blkEvent.id);
+                const blockImage = imageMgr.get(blkEvent.type, blkEvent.id);
                 event.drawImage(blockImage, 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * block.x, BLOCK_WIDTH * block.y, BLOCK_WIDTH, BLOCK_WIDTH);
                 canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImage, 0);
                 canvasAnimate.syncGlobalAnimate();
@@ -408,7 +408,7 @@ class CanvasAnimateManager {
                 x: loc[0],
                 y: loc[1],
                 blockIcon: 0,
-                blockImage: images.get(blkEvent.type, blkEvent.id)
+                blockImage: imageMgr.get(blkEvent.type, blkEvent.id)
             });
         });
 
@@ -489,7 +489,7 @@ class CanvasAnimateManager {
         // 设置动画速度和背景图案
         this.setCtxSpeed(config.pngAnimateSpeed);
 
-        const groundImg = images.getGround();
+        const groundImg = imageMgr.getGround();
         this.setCtxBackground(ui.createPattern(groundImg, "repeat"));
 
         // 主绘制函数

@@ -297,5 +297,8 @@ export function logExecutionTime(fn: Function) {
  * @returns an array of the imported modules.
  */
 export function importAll(r: __WebpackModuleApi.RequireContext) {
-    return r.keys().map(r);
+    return r.keys().map((key) => ({
+        path: key,
+        module: r(key)
+    }));
 }

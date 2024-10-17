@@ -308,7 +308,7 @@ export function initBlockInfo(block: Block): void {
 }
 
 export function addBlockEvent(block: Block, x: number, y: number, event_input: any): void {
-    console.log('add event for', JSON.stringify(block), x, y, JSON.stringify(event_input));
+    // console.log('add event for', JSON.stringify(block), x, y, JSON.stringify(event_input));
 
     if (!isset(event_input)) {
         console.log('no event input');
@@ -356,7 +356,7 @@ export function addSwitchFloorBlockEvent(floorID: number, block: Block, x: numbe
     if (!isset(event)) {
         return;
     }
-    console.log('add switch floor for', floorID, block, x, y, event);
+    // console.log('add switch floor for', floorID, block, x, y, event);
 
     addBlockEvent(block, x, y, { trigger: 'switchFloor', data: event });
 }

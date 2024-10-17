@@ -1,7 +1,7 @@
 import { BLOCK_WIDTH, DEFAULT_INTERVAL_MILLS, DEFAULT_TIMEOUT_MILLS, DIRECTION_TO_POINT_MAP } from "../../common/constants";
 import { autoRoute, RouteElem } from "../../player/autoroute";
 import { canvas, player } from "./canvas";
-import { getPlayerIconLineOfDirection, getPlayerIconStateIdx, images } from "../../resource/images";
+import { getPlayerIconLineOfDirection, getPlayerIconStateIdx, imageMgr } from "../../resource/images";
 import { playerMgr } from "../../player/data";
 import { isset, toInt } from "../../common/util";
 import { core } from "../../common/global";
@@ -24,7 +24,7 @@ export function drawPlayer(direction: string = playerMgr.getPlayerLocDirection()
 
     player.clearRect(x - BLOCK_WIDTH, y - BLOCK_WIDTH, 3 * BLOCK_WIDTH, 3 * BLOCK_WIDTH);
 
-    const playerImg = images.getPlayer();
+    const playerImg = imageMgr.getPlayer();
     const height = playerMgr.getPlayerIconHeight();
 
     player.drawImage(playerImg, getPlayerIconStateIdx(direction, status) * 32, getPlayerIconLineOfDirection(direction) * height, 32, height, x + offsetX, y + offsetY + 32 - height, 32, height);

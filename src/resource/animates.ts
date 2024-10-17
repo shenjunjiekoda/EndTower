@@ -24,15 +24,11 @@ function createImageFromBase64(base64String: string): HTMLImageElement {
     return img;
 }
 
-
 class AnimateManager {
-    static instance: AnimateManager;
+    static instance: AnimateManager | null = null;
     private animateResource!: Record<string, AnimateResource>;
 
-    constructor() {
-        if (AnimateManager.instance) {
-            return AnimateManager.instance;
-        }
+    private constructor() {
         AnimateManager.instance = this;
         this.animateResource = {};
     }
@@ -55,7 +51,8 @@ class AnimateManager {
         const animateNames = Object.keys(animateResource);
         console.log(`init animates: ${animateNames}`);
         animateNames.forEach((animateName) => {
-            console.log(`importing animate: ${animateName}`);
+            console.log(`${this} importing animate: ${animateName} `);
+            
             this.loadAnimate(animateName, (animateName, animate) => {
                 console.log(`loaded animate: ${animateName}`, animate);
                 this.animateResource[animateName] = animate;
