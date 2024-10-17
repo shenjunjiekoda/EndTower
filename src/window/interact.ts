@@ -1081,8 +1081,7 @@ class InteractManager {
         }
     }
 
-    bookOnClickHandler() {
-        console.log('bookOnClickHandler');
+    encyclopediaOnClickHandler() {
         if (core.isStarted()) {
             drawOpenEncyclopedia(true);
         }
@@ -1671,6 +1670,46 @@ class InteractManager {
         drawCursor();
     }
 
+    transporterOnClickHandler() {
+        if (core.isStarted()) {
+            eventManager.handleUseToolBarTransporter(true);
+        }
+    }
+
+    saveImageOnClickHandler() {
+        if (core.isStarted()) {
+            eventManager.handleSaveGame(true);
+        }
+    }
+
+    loadImageOnClickHandler() {
+        if (core.isStarted()) {
+            eventManager.handleLoadGame(true);
+        }
+    }
 }
 
 export let interact = new InteractManager();
+
+
+document.body.onkeydown = interact.keyDownHandler;
+document.body.onkeyup = interact.keyUpHandler;
+window.onorientationchange = () => {
+    gameWindow.resize();
+};
+
+getDomNode('data').onmousedown = interact.mouseDownHandler;
+getDomNode('data').onmouseup = interact.mouseUpHandler;
+getDomNode('data').onmousemove = interact.onMouseMoveHandler;
+
+getDomNode('data').ontouchstart = interact.touchStartHandler;
+getDomNode('data').ontouchend = interact.touchEndHandler;
+getDomNode('data').ontouchmove = interact.onTouchMoveHandler;
+
+getDomNode('encyclopediaToolImg').onclick = interact.encyclopediaOnClickHandler;
+getDomNode('transporterToolImg').onclick = interact.transporterOnClickHandler;
+getDomNode('noteBookToolImg').onclick = interact.noteBookOnClickHandler;
+getDomNode('toolBoxToolImg').onclick = interact.toolBoxOnClickHandler;
+getDomNode('saveToolImg').onclick = interact.saveImageOnClickHandler;
+getDomNode('loadToolImg').onclick = interact.loadImageOnClickHandler;
+getDomNode('settingToolImg').onclick = interact.settingsOnClickHandler;
