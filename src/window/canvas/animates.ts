@@ -12,21 +12,21 @@ import { animates, AnimateSingleFrame } from "../../resource/animates";
 import { drawPlayer } from "./player";
 import { config } from "../../common/config";
 
-interface AnimateObj {
+interface BlockAnimateFrame {
     x: number;
     y: number;
 
-    status: number;
+    index: number;
     line: number;
     images: HTMLImageElement[];
 }
 
-class GlobalAnimateObjs {
-    twoAnimateObjs: AnimateObj[] = [];
-    fourAnimateObjs: AnimateObj[] = [];
+class MapsAnimateContext {
+    twoAnimateObjs: BlockAnimateFrame[] = [];
+    fourAnimateObjs: BlockAnimateFrame[] = [];
 }
 
-export interface BoxAnimateObj {
+export interface RegionAnimateObj {
     bgx: number;
     bgy: number;
     bgheight: number;
@@ -44,14 +44,14 @@ export interface BoxAnimateObj {
 class AnimateFrameContext {
     // 背景 | Background 
     background: string | CanvasGradient | CanvasPattern | null = null;
-    // 全局动画 | Global animate 
-    global: boolean = false;
+    // 地图动画 | Show map animate 
+    showMap: boolean = false;
     // 两帧时间
     twoTime: number = 0;
     // 四帧时间
     fourTime: number = 0;
-    // 箱子时间 
-    boxTime: number = 0;
+    // 区域时间 
+    regionTime: number = 0;
     // 移动时间
     moveTime: number = 0;
     // 速度
@@ -60,9 +60,24 @@ class AnimateFrameContext {
 
 class CanvasAnimateManager {
     private ctx: AnimateFrameContext = new AnimateFrameContext();
-    private globalAnimateObjs: GlobalAnimateObjs = new GlobalAnimateObjs();
-    private boxAnimateObjs: BoxAnimateObj[] = [];
+    private mapsAnimateCtx: MapsAnimateContext = new MapsAnimateContext();
+    private regionAnimateObjs: RegionAnimateObj[] = [];
     private animateInterval: NodeJS.Timeout | undefined = undefined;
+    private static instance: CanvasAnimateManager;
+
+    constructor() {
+        if (CanvasAnimateManager.instance) {
+            throw new Error("Error: Instantiation failed: Use CanvasAnimateManager.getInstance() instead of new.");
+        }
+        CanvasAnimateManager.instance = this;
+    }
+
+    static getInstance() {
+        if (!CanvasAnimateManager.instance) {
+            CanvasAnimateManager.instance = new CanvasAnimateManager();
+        }
+        return CanvasAnimateManager.instance;
+    }
 
     getCtx() {
         return this.ctx;
@@ -78,7 +93,7 @@ class CanvasAnimateManager {
 
     draw(name: string, x: number, y: number, callback?: Function) {
 
-        console.log('drawAnimate:', name, x, y);
+        console.log('canvasAnimate.draw:', name, x, y);
         const a = animates.get(name);
         // 清空animate层
         clearInterval(this.animateInterval);
@@ -140,61 +155,61 @@ class CanvasAnimateManager {
         }, 50);
     }
 
-    resetBoxAnimate() {
-        this.boxAnimateObjs = [];
+    resetRegionAnimate() {
+        this.regionAnimateObjs = [];
     }
 
     @log
     @callertrace
-    pushBoxAnimateObj(bgx: number, bgy: number, bgheight: number, bgwidth: number, x: number, y: number, images: HTMLImageElement[], line: number = 0) {
-        this.boxAnimateObjs.push({ bgx, bgy, bgheight, bgwidth, x, y, images, line });
+    pushRegionAnimateObj(bgx: number, bgy: number, bgheight: number, bgwidth: number, x: number, y: number, images: HTMLImageElement[], line: number = 0) {
+        this.regionAnimateObjs.push({ bgx, bgy, bgheight, bgwidth, x, y, images, line });
     }
 
-    removeGlobalAnimatePoint(x: number, y: number) {
-        for (let i = 0; i < this.globalAnimateObjs.twoAnimateObjs.length; i++) {
-            if (this.globalAnimateObjs.twoAnimateObjs[i].x == x * BLOCK_WIDTH && this.globalAnimateObjs.twoAnimateObjs[i].y == y * BLOCK_WIDTH) {
-                this.globalAnimateObjs.twoAnimateObjs.splice(i, 1);
+    removeMapAnimateBlock(x: number, y: number) {
+        for (let i = 0; i < this.mapsAnimateCtx.twoAnimateObjs.length; i++) {
+            if (this.mapsAnimateCtx.twoAnimateObjs[i].x == x * BLOCK_WIDTH && this.mapsAnimateCtx.twoAnimateObjs[i].y == y * BLOCK_WIDTH) {
+                this.mapsAnimateCtx.twoAnimateObjs.splice(i, 1);
                 return;
             }
         }
-        for (let i = 0; i < this.globalAnimateObjs.fourAnimateObjs.length; i++) {
-            if (this.globalAnimateObjs.fourAnimateObjs[i].x == x * BLOCK_WIDTH && this.globalAnimateObjs.fourAnimateObjs[i].y == y * BLOCK_WIDTH) {
-                this.globalAnimateObjs.fourAnimateObjs.splice(i, 1);
+        for (let i = 0; i < this.mapsAnimateCtx.fourAnimateObjs.length; i++) {
+            if (this.mapsAnimateCtx.fourAnimateObjs[i].x == x * BLOCK_WIDTH && this.mapsAnimateCtx.fourAnimateObjs[i].y == y * BLOCK_WIDTH) {
+                this.mapsAnimateCtx.fourAnimateObjs.splice(i, 1);
                 return;
             }
         }
     }
 
 
-    resetGlobalAnimate() {
-        this.globalAnimateObjs.twoAnimateObjs = [];
-        this.globalAnimateObjs.fourAnimateObjs = [];
+    resetMapsAnimate() {
+        this.mapsAnimateCtx.twoAnimateObjs = [];
+        this.mapsAnimateCtx.fourAnimateObjs = [];
     }
 
-    pushGlobalAnimateObj(frameCnt: number, x: number, y: number, images: HTMLImageElement[], line: number = 0) {
-        const animateObj: AnimateObj = { x, y, status: 0, line, images };
+    pushMapsAnimateObj(frameCnt: number, x: number, y: number, images: HTMLImageElement[], line: number = 0) {
+        const animateObj: BlockAnimateFrame = { x, y, index: 0, line, images };
         if (frameCnt === 2) {
-            this.globalAnimateObjs.twoAnimateObjs.push(animateObj);
+            this.mapsAnimateCtx.twoAnimateObjs.push(animateObj);
             return;
         }
         if (frameCnt === 4) {
-            this.globalAnimateObjs.fourAnimateObjs.push(animateObj);
+            this.mapsAnimateCtx.fourAnimateObjs.push(animateObj);
         }
     }
 
 
-    syncGlobalAnimate() {
-        const resetObjStatus = (obj: AnimateObj) => {
-            obj.status = 0;
+    syncMapsAnimate() {
+        const resetObjIdx = (obj: BlockAnimateFrame) => {
+            obj.index = 0;
         };
-        this.globalAnimateObjs.twoAnimateObjs.forEach(resetObjStatus);
-        this.globalAnimateObjs.fourAnimateObjs.forEach(resetObjStatus);
+        this.mapsAnimateCtx.twoAnimateObjs.forEach(resetObjIdx);
+        this.mapsAnimateCtx.fourAnimateObjs.forEach(resetObjIdx);
     }
 
-    setGlobalAnimate(speed: number) {
-        this.syncGlobalAnimate();
+    enableMapsAnimate(speed: number) {
+        this.syncMapsAnimate();
         this.ctx.speed = speed;
-        this.ctx.global = true;
+        this.ctx.showMap = true;
     }
 
     showDomAsAnimate(element: string, timemills?: number, callback?: Function) {
@@ -244,20 +259,20 @@ class CanvasAnimateManager {
     @log
     @callertrace
     closeUIPanel() {
-        this.boxAnimateObjs = [];
+        this.regionAnimateObjs = [];
         ui.clearRect();
         ui.setAlpha(1);
         core.unlock();
         core.resetEvent();
     }
 
-    drawBoxAnimate() {
-        for (let i = 0; i < this.boxAnimateObjs.length; i++) {
-            let obj = this.boxAnimateObjs[i];
+    drawRegionAnimate() {
+        for (let i = 0; i < this.regionAnimateObjs.length; i++) {
+            let obj = this.regionAnimateObjs[i];
             obj.status = ((obj.status || 0) + 1) % 2;
             ui.clearRect(obj.bgx, obj.bgy, obj.bgheight, obj.bgwidth);
             ui.fillRect(obj.bgx, obj.bgy, obj.bgheight, obj.bgwidth, this.ctx.background!);
-            console.log('draw box animate image: ', obj.images, obj.status)
+            // console.log('draw region animate image: ', obj.images, obj.status)
             ui.drawImage(obj.images[obj.status], 0, obj.line * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
         }
     }
@@ -377,9 +392,13 @@ class CanvasAnimateManager {
             if (floorId == playerMgr.getFloorId() && isset(block.event)) {
                 const blkEvent = block.event!;
                 const blockImages = imageMgr.getImages(blkEvent.type, blkEvent.id);
-                event.drawImage(blockImages[0], 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * block.x, BLOCK_WIDTH * block.y, BLOCK_WIDTH, BLOCK_WIDTH);
-                canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImages, 0);
-                canvasAnimate.syncGlobalAnimate();
+                if (blockImages.length > 0) {
+                    event.drawImage(blockImages[0], 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * block.x, BLOCK_WIDTH * block.y, BLOCK_WIDTH, BLOCK_WIDTH);
+                    canvasAnimate.pushMapsAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImages, 0);
+                    canvasAnimate.syncMapsAnimate();
+                } else {
+                    console.log('block image not found: ', blkEvent.type, blkEvent.id);
+                }
             }
             statusBar.syncPlayerStatus();
         }
@@ -500,36 +519,38 @@ class CanvasAnimateManager {
         const draw = (timestamp: number) => {
             this.ctx.twoTime = this.ctx.twoTime || timestamp;
             this.ctx.fourTime = this.ctx.fourTime || timestamp;
-            this.ctx.boxTime = this.ctx.boxTime || timestamp;
+            this.ctx.regionTime = this.ctx.regionTime || timestamp;
             this.ctx.moveTime = this.ctx.moveTime || timestamp;
 
             // 是全局动画
-            if (this.ctx.global && core.isStarted()) {
+            if (this.ctx.showMap && core.isStarted()) {
                 // 两帧动画
-                if (timestamp - this.ctx.twoTime > this.ctx.speed && isset(this.globalAnimateObjs.twoAnimateObjs)) {
-                    this.globalAnimateObjs.twoAnimateObjs.forEach((obj: any) => {
-                        obj.status = (obj.status + 1) % 2;
+                if (timestamp - this.ctx.twoTime > this.ctx.speed && isset(this.mapsAnimateCtx.twoAnimateObjs)) {
+                    this.mapsAnimateCtx.twoAnimateObjs.forEach((obj: BlockAnimateFrame) => {
+                        obj.index = (obj.index + 1) % 2;
                         event.clearRect(obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
-                        event.drawImage(obj.images[obj.status], 0, obj.loc * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
+                        event.drawImage(obj.images[obj.index], 0, obj.line * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
                     });
                     this.ctx.twoTime = timestamp;
                 }
 
                 // 四帧动画
-                if (timestamp - this.ctx.fourTime > this.ctx.speed / 2 && isset(this.globalAnimateObjs.fourAnimateObjs)) {
-                    this.globalAnimateObjs.fourAnimateObjs.forEach((obj: any) => {
-                        obj.status = (obj.status + 1) % 4;
+                if (timestamp - this.ctx.fourTime > this.ctx.speed / 2 && isset(this.mapsAnimateCtx.fourAnimateObjs)) {
+                    // console.log('fouranimateobjs drawe');
+                    this.mapsAnimateCtx.fourAnimateObjs.forEach((obj: BlockAnimateFrame) => {
+                        obj.index = (obj.index + 1) % 4;
                         event.clearRect(obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
-                        event.drawImage(obj.images[obj.status], 0, obj.loc * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
+                        // console.log('draw fou animate image', obj.images[obj.status].src);
+                        event.drawImage(obj.images[obj.index], 0, obj.line * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, obj.x, obj.y, BLOCK_WIDTH, BLOCK_WIDTH);
                     });
                     this.ctx.fourTime = timestamp;
                 }
             }
 
             // 盒子动画
-            if (timestamp - this.ctx.boxTime > this.ctx.speed && isset(this.boxAnimateObjs) && this.boxAnimateObjs.length > 0) {
-                this.drawBoxAnimate();
-                this.ctx.boxTime = timestamp;
+            if (timestamp - this.ctx.regionTime > this.ctx.speed && isset(this.regionAnimateObjs) && this.regionAnimateObjs.length > 0) {
+                this.drawRegionAnimate();
+                this.ctx.regionTime = timestamp;
             }
 
             // 玩家移动动画
@@ -555,4 +576,4 @@ class CanvasAnimateManager {
 
 }
 
-export let canvasAnimate = new CanvasAnimateManager();
+export let canvasAnimate = CanvasAnimateManager.getInstance();

@@ -17,17 +17,25 @@ export interface BlockEvent {
     animateFrameCount?: number;
 }
 
-export interface Block {
+export class Block {
     // x 坐标 | X cordinate
-    x: number;
+    x: number = 0;
     // y 坐标 | Y cordinate
-    y: number;
+    y: number = 0;
     // id | ID
     id?: number;
     // 是否可见 | Visible or not
     enable?: boolean;
     // 块事件 | Block event
     event?: BlockEvent;
+
+    constructor(x: number, y: number, id: number, enable?: boolean, event?: BlockEvent) {
+        this.x = x;
+        this.y = y;
+        this.id = id;
+        this.enable = enable;
+        this.event = event;
+    }
 }
 
 const init_block_events: { [key: number]: BlockEvent } = {
@@ -231,7 +239,7 @@ const init_block_events: { [key: number]: BlockEvent } = {
 };
 
 
-export function getBlock(x: number, y: number, id: number | string): Block {
+export function createBlock(x: number, y: number, id: number | string): Block {
     let enable: boolean | null = null;
     id = String(id);
 
@@ -247,7 +255,7 @@ export function getBlock(x: number, y: number, id: number | string): Block {
 
     const parsedId = parseInt(id);
 
-    const block: Block = { x, y, id: parsedId };
+    let block: Block = new Block( x, y, parsedId );
     if (isset(enable)) {
         block.enable = enable!;
     }
@@ -262,7 +270,7 @@ export function getBlock(x: number, y: number, id: number | string): Block {
 export function getBlockAtPointOnFloor(x: number, y: number, floorId: number = playerMgr.getFloorId(), needEnable = true): { index: number, block: Block } | null {
     const mapData = getMapData(floorId);
 
-    if (!mapData || !mapData.blocks) {
+    if (!isset(mapData) || !isset(mapData.blocks)) {
         console.error(`invalid map data for floorId=${floorId}`);
         return null;
     }
@@ -271,10 +279,12 @@ export function getBlockAtPointOnFloor(x: number, y: number, floorId: number = p
     const index = blocks.findIndex(block => block.x === x && block.y === y && isset(block.event));
 
     if (index === -1) {
+        console.log(`no block event at ${x}, ${y} on floor ${floorId}`);
         return null;
     }
 
-    if (needEnable && !blocks[index].enable) {
+    if (needEnable && isset(blocks[index].enable) && !(blocks[index].enable!)) {
+        console.log(`block event at ${x}, ${y} on floor ${floorId} is disabled`);
         return null;
     }
 
@@ -308,15 +318,17 @@ export function initBlockInfo(block: Block): void {
 }
 
 export function addBlockEvent(block: Block, x: number, y: number, event_input: any): void {
-    // console.log('add event for', JSON.stringify(block), x, y, JSON.stringify(event_input));
-
+    // console.log('add block event for', JSON.stringify(block), x, y, JSON.stringify(event_input));
+    if (x != block.x || y != block.y) {
+        return;
+    }
     if (!isset(event_input)) {
         console.log('no event input');
         return;
     }
 
     if (!isset(block.event)) {
-        console.log('no event for block, set as terrains');
+        // console.log('no event for block, set as terrains');
         block.event = { type: 'terrains', id: 'normalBlock', noPass: false };
     }
 
@@ -343,22 +355,43 @@ export function addBlockEvent(block: Block, x: number, y: number, event_input: a
         block.event!.trigger = event.trigger;
     }
 
+    if (x == 6 && y == 2) {
+        console.log("6,2 event:", event);
+        console.log("6,2 block event:", block.event);
+    }
+    let event_to_clone: BlockEvent = clone(block.event!);
     for (const key in event) {
         if (key !== 'enable' && key !== 'trigger') {
             const clonedValue = clone(event[key]);
-            block.event![key as keyof BlockEvent] = clonedValue;
+            console.log("key,value", key, clonedValue);
+            console.log('before update event key', key, event_to_clone![key as keyof BlockEvent], event_to_clone!.data, event_to_clone);
+            event_to_clone![key as keyof BlockEvent] = clonedValue;
+            console.log('after update event key', key, event_to_clone![key as keyof BlockEvent], event_to_clone!.data, event_to_clone);
         }
     }
-    block.event = clone(block.event);
+
+    if (x == 6 && y == 2) {
+        console.log("6,2 block event here3:", event);
+    }
+
+    if (x == 6 && y == 2) {
+        console.log("6,2 block event here4:", block, event_to_clone, event_to_clone!.data);
+    }
+    block.event = clone(event_to_clone);
+    if (x == 6 && y == 2) {
+        console.log("6,2 block event here5:", block, block.event, block.event!.data);
+    }
 }
 
 export function addSwitchFloorBlockEvent(floorID: number, block: Block, x: number, y: number, event?: any): void {
     if (!isset(event)) {
         return;
     }
-    // console.log('add switch floor for', floorID, block, x, y, event);
+    if (x == 6 && y == 2) {
+        console.log('6,2 add switch floor for', floorID, block, x, y, event);
+    }
 
-    addBlockEvent(block, x, y, { trigger: 'switchFloor', data: event });
+    addBlockEvent(block, x, y, { trigger: 'switchFloor', data: clone(event!) });
 }
 
 

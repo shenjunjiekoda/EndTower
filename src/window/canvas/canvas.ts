@@ -288,6 +288,22 @@ class CanvasManager {
     // 玩家移动间隔 | Player move interval
     private playerMoveInterval: NodeJS.Timeout | undefined = undefined;
 
+    private static instance: CanvasManager;
+
+    private constructor() {
+        if (CanvasManager.instance) {
+            throw new Error("Error: Instantiation failed: Use CanvasManager.getInstance() instead of new.");
+        }
+        CanvasManager.instance = this;
+    }
+
+    static getInstance(): CanvasManager {
+        if (!CanvasManager.instance) {
+            CanvasManager.instance = new CanvasManager();
+        }
+        return CanvasManager.instance;
+    }
+
     clearAllCanvas() {
         Object.values(canvasContexts).forEach(c => c.clearRect());
     }
@@ -416,7 +432,7 @@ class CanvasManager {
         playerMgr.setFloorId(floorId);
 
         this.clearAllCanvas();
-        canvasAnimate.resetGlobalAnimate();
+        canvasAnimate.resetMapsAnimate();
 
         const groundId = getFloorById(floorId)!.defaultGround || "ground";
         const groundImage = imageMgr.getGround(groundId);
@@ -429,19 +445,20 @@ class CanvasManager {
 
         for (let i = 0; i < mapBlocks.length; i++) {
             const block = mapBlocks[i];
-            console.log('block', i, block);
+            // console.log('block', i, block);
             if (isset(block.event) && !(isset(block.enable) && !block.enable)) {
                 const blkEvent = block.event!;
                 if (isset(blkEvent.id)) {
                     const blockImages = imageMgr.getImages(blkEvent.type, blkEvent.id);
-                    console.log('draw image', blockImages);
+                    console.log('draw block images', blkEvent.type, blkEvent.id, blockImages);
+                    console.log('draw block images src', blockImages[0].src);
                     event.drawImage(blockImages[0], 0, 0, BLOCK_WIDTH, BLOCK_WIDTH, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
-                    canvasAnimate.pushGlobalAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImages);
+                    canvasAnimate.pushMapsAnimateObj(blkEvent.animateFrameCount!, block.x * BLOCK_WIDTH, block.y * BLOCK_WIDTH, blockImages);
                 }
             }
         }
 
-        canvasAnimate.setGlobalAnimate(config.pngAnimateSpeed);
+        canvasAnimate.enableMapsAnimate(config.pngAnimateSpeed);
 
         if (isset(callback)) {
             callback!();
@@ -553,7 +570,8 @@ class CanvasManager {
                     }
                 }
             }
-            
+
+            console.log('eventManager', eventManager);
             content = eventManager.resolveText(content!);
 
             if (id == 'player' || isset(images)) {
@@ -605,9 +623,9 @@ class CanvasManager {
                     ui.fillText(name!, title_offset, top + 27, GOLD, DEFAULT_TEXT_FONT);
                     if (isset(images)) {
                         ui.strokeRect(left + BLOCK_WIDTH / 2 - 2, top + BLOCK_WIDTH - 3, BLOCK_WIDTH + 2, BLOCK_WIDTH + 2, DARK_GRAY, 2);
-                        canvasAnimate.resetBoxAnimate();
-                        
-                        canvasAnimate.pushBoxAnimateObj(
+                        canvasAnimate.resetRegionAnimate();
+
+                        canvasAnimate.pushRegionAnimateObj(
                             left + BLOCK_WIDTH / 2 - 1,
                             top + BLOCK_WIDTH - 2,
                             BLOCK_WIDTH,
@@ -616,7 +634,7 @@ class CanvasManager {
                             top + BLOCK_WIDTH - 2,
                             images!
                         );
-                        canvasAnimate.drawBoxAnimate();
+                        canvasAnimate.drawRegionAnimate();
                     }
                 }
             }
@@ -761,4 +779,4 @@ class CanvasManager {
 
 }
 
-export let canvas = new CanvasManager();
+export let canvas = CanvasManager.getInstance();

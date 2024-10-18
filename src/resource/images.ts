@@ -1,13 +1,24 @@
-import { importAll, isset, logExecutionTime } from "../common/util";
+import { callertrace, importAll, isset, log, logExecutionTime } from "../common/util";
 import { playerMgr } from "../player/data";
 
 const IMAGE_OUTPUT_DIR = 'images';
 
 class ImageManager {
+    private static instance: ImageManager;
     private images: Record<string, HTMLImageElement>;
 
     constructor() {
+        if (ImageManager.instance) {
+            throw new Error('Cannot create multiple ImageManager instances');
+        }
         this.images = {};
+    }
+
+    static getInstance() {
+        if (!ImageManager.instance) {
+            ImageManager.instance = new ImageManager();
+        }
+        return ImageManager.instance;
     }
 
     getGround(id: string = 'ground') {
@@ -133,11 +144,15 @@ class ImageManager {
         }
     }
 
+    @log
+    @callertrace
     private setPlayerManImage() {
         this.images['player'] = this.images['players/player-man.png'];
         playerMgr.setPlayerIconHeight(this.images['player'].height / 4);
     }
 
+    @log
+    @callertrace
     private setPlayerWomanImage() {
         this.images['player'] = this.images['players/player-woman.png'];
         playerMgr.setPlayerIconHeight(this.images['player'].height / 4);
@@ -154,7 +169,7 @@ class ImageManager {
 }
 
 
-export let imageMgr = new ImageManager();
+export let imageMgr = ImageManager.getInstance();
 
 
 interface PlayerIcon {

@@ -1,7 +1,7 @@
 import { config } from "../common/config";
 import { core } from "../common/global";
 import { callertrace, isset, log } from "../common/util";
-import { getBlock, getBlockAtPointOnFloor } from "../floor/block";
+import { createBlock, getBlockAtPointOnFloor } from "../floor/block";
 import { getAllFloorIds, getMapData } from "../floor/data";
 import { playerMgr } from "../player/data";
 import { canvas, player, ui } from "../window/canvas/canvas";
@@ -26,10 +26,22 @@ export interface Item {
 }
 
 class ItemManager {
+    static instance: ItemManager;
     private items!: Record<string, Item>;
 
-    constructor() {
-        this.initItems();
+    private constructor() {
+        if (ItemManager.instance) {
+            throw new Error("Error: Instantiation failed: Use ItemManager.getInstance() instead of new.");
+        }
+        ItemManager.instance = this;
+        this.items = {};
+    }
+
+    static getInstance() {
+        if (!ItemManager.instance) {
+            ItemManager.instance = new ItemManager();
+        }
+        return ItemManager.instance;
     }
 
     private initKeys() {
@@ -650,8 +662,7 @@ class ItemManager {
                 removeBlockByIds(playerMgr.getFloorId(), core.getEventData('ids'));
 
                 canvas.drawMap(playerMgr.getFloorId(), () => {
-                    const playerLoc = playerMgr.getPlayerLoc();
-                    drawPlayer(playerLoc.direction, playerLoc.x, playerLoc.y, 'stop');
+                    drawPlayer();
                     updateDamageDisplay();
                     canvas.drawTip(i18next.t('use_item') + this.items[itemId].name);
 
@@ -730,4 +741,4 @@ class ItemManager {
     }
 }
 
-export const itemMgr = new ItemManager();
+export const itemMgr = ItemManager.getInstance();

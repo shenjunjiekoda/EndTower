@@ -4,8 +4,19 @@ const AUDIO_OUTPUT_DIR='audios'
 
 class AudioManager {
     private audios: Record<string, HTMLAudioElement>;
+    private static instance: AudioManager;
+
+    static getInstance() {
+        if (!AudioManager.instance) {
+            AudioManager.instance = new AudioManager();
+        }
+        return AudioManager.instance;
+    }
 
     constructor() {
+        if (AudioManager.instance) {
+            throw new Error("Error: Instantiation failed: Use AudioManager.getInstance() instead of new.");
+        }
         this.audios = {};
     }
 
@@ -69,4 +80,4 @@ class AudioManager {
 }
 
 
-export let audioMgr = new AudioManager();
+export let audioMgr = AudioManager.getInstance();

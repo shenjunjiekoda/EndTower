@@ -54,6 +54,22 @@ class AutoRoute {
 
     private turnPlayerTimeout: NodeJS.Timeout | null = null;
 
+    private static instance: AutoRoute;
+
+    private constructor() {
+        if (AutoRoute.instance) {
+            throw new Error("Cannot create multiple instances of AutoRoute");
+        }
+        AutoRoute.instance = this;
+    }
+
+    static getInstance() {
+        if (!AutoRoute.instance) {
+            AutoRoute.instance = new AutoRoute();
+        }
+        return AutoRoute.instance;
+    }
+
     stop() {
         if (!core.isStarted()) {
             return;
@@ -135,6 +151,7 @@ class AutoRoute {
     }
 
     getRoutePostEventLength() {
+        // console.log("getRoutePostEventLength", this, this.routePostEvent.length);
         return this.routePostEvent.length;
     }
 
@@ -464,4 +481,4 @@ class AutoRoute {
     }
 }
 
-export let autoRoute = new AutoRoute();
+export const autoRoute = AutoRoute.getInstance();

@@ -73,14 +73,14 @@ export function drawEncyclopedia(index: number) {
     let start = (page - 1) * perpage, end = Math.min(page * perpage, enemys.length);
     enemys = enemys.slice(start, end);
 
-    canvasAnimate.resetBoxAnimate();
+    canvasAnimate.resetRegionAnimate();
 
     for (let i = 0; i < enemys.length; i++) {
         let enemy = enemys[i];
         ui.strokeRect(22, 62 * i + 22, 42, 42, LIGHT_GRAY, 2);
 
         // 怪物
-        canvasAnimate.pushBoxAnimateObj(
+        canvasAnimate.pushRegionAnimateObj(
             22, 62 * i + 22, 42, 42,
             27, 62 * i + 27, imageMgr.getEnemyImages(enemy.id!)
         );
@@ -134,7 +134,7 @@ export function drawEncyclopedia(index: number) {
         }
 
     }
-    canvasAnimate.drawBoxAnimate();
+    canvasAnimate.drawRegionAnimate();
     drawPagination(page, totalPage);
 }
 
@@ -219,7 +219,6 @@ export function drawThumbnail(floorId: number, canvasId: string, blocks: Block[]
         }
     }
 
-    let mapArray = blocksToNumberArray(blocks);
     for (let i = 0; i < blocks.length; i++) {
         let block: Block = blocks[i];
         if (isset(block.event) && !(isset(block.enable) && !(block.enable!))) {
@@ -414,7 +413,7 @@ export function drawOpenEncyclopedia(needCheckStatus: boolean = false) {
     console.log('open encyclopedia', eventId);
 
     if (eventId == 'encyclopedia' && core.hasEventDataSelection()) {
-        canvasAnimate.resetBoxAnimate()
+        canvasAnimate.resetRegionAnimate()
         canvas.drawMaps(core.getEventDataSelection());
         return;
     }
@@ -667,7 +666,7 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
     data.setAlpha(1.0);
     data.setOpacity(1);
 
-    canvasAnimate.resetBoxAnimate();
+    canvasAnimate.resetRegionAnimate();
 
     let margin = 35;
     let boxWidth = 40;
@@ -699,12 +698,12 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
     ui.drawImage(imageMgr.getPlayer(), getPlayerIconStillOfDirection('down') * BLOCK_WIDTH, getPlayerIconLineOfDirection('down') * playerHeight, BLOCK_WIDTH, playerHeight, left + margin + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, BLOCK_WIDTH, playerHeight);
 
     // 怪物的
-    canvasAnimate.resetBoxAnimate();
-    canvasAnimate.pushBoxAnimateObj(
+    canvasAnimate.resetRegionAnimate();
+    canvasAnimate.pushRegionAnimateObj(
         left + right - margin - 40, top + margin, boxWidth, boxWidth,
         left + right - margin - 40 + (boxWidth - BLOCK_WIDTH) / 2, top + margin + (boxWidth - BLOCK_WIDTH) / 2, imageMgr.getEnemyImages(enemyId)
     );
-    canvasAnimate.drawBoxAnimate();
+    canvasAnimate.drawRegionAnimate();
 
     let lineWidth = 80;
 
@@ -828,7 +827,7 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
         if (player_hp <= 0 || enemy_hp <= 0) {
             // 战斗结束
             clearInterval(battleInterval);
-            canvasAnimate.resetBoxAnimate();
+            canvasAnimate.resetRegionAnimate();
             ui.clearRect();
             ui.setAlpha(1.0);
             data.clearRect();

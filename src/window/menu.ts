@@ -3,13 +3,16 @@ import { initTextAttribute } from "./textAttribute";
 import { log, logExecutionTime } from "../common/util";
 import { getDomNode, hideDomNode, setBackGroundColor, setInnerHtml, setNonOpaque, setOpacity, showDomNode } from "../common/client";
 import { BLACK } from "../common/constants";
-import { canvas, event, ui } from "./canvas/canvas";
+import { canvas, event, initCanvasContexts, ui } from "./canvas/canvas";
 import { canvasAnimate } from "./canvas/animates";
 import i18next from "../common/i18n";
 import { eventManager } from "../events/events";
-import { config } from "../common/config";
+import { config, initGlobalConfig } from "../common/config";
 import { imageMgr } from "../resource/images";
 import gameWindow from "./gameWindow";
+import { itemMgr } from "../items/data";
+import { enemiesMgr } from "../enemies/data";
+import { shopMgr } from "../shops/shops";
 
 class Menu {
     static instance: Menu;
@@ -31,22 +34,19 @@ class Menu {
 
     @log
     reload() {
-        // initGlobalConfig();
-        // coreStatus.init();
-        // initCanvasContexts();
-        // initImages();
-        // initEnemys();
-        // initEvents();
-        // initMaps();
-        // initItems();
-        // initAnimates();
-        // initShops();
-        canvasAnimate.setRequestAnimationFrame();
-        logExecutionTime(initFloors)();
-        logExecutionTime(initFloorMaps)();
+        initGlobalConfig();
         logExecutionTime(initTextAttribute)();
-
+        itemMgr.initItems();
+        enemiesMgr.initEnemys();
+        shopMgr.initShops();
+        initFloors();
+        initFloorMaps();
+        // logExecutionTime(initFloorMaps)();
+        // logExecutionTime(initFloors)();
         eventManager.initTriggerEvents();
+
+        canvasAnimate.setRequestAnimationFrame();
+
     }
 
     show() {

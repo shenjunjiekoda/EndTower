@@ -6,7 +6,7 @@ export const floor7: Floor = {
     title: "main_7",
     transporterEnabled: true,
     quickShopEnabled: true,
-    defaultGround: "brownground",
+    defaultGround: "snowground",
     map: [
         [/*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19, /*wall=*/19],
         [/*wall=*/19, 87, 0, 0, 0, 0, 0, 0, 0,/*wall=*/19,/*wall=*/19,/*wall=*/19,/*wall=*/19],

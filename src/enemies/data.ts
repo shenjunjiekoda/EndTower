@@ -25,7 +25,22 @@ export interface Enemy {
 }
 
 class EnemiesManager {
+    static instance: EnemiesManager;
     private enemys: Record<string, Enemy> = {};
+
+    private constructor() {
+        if (EnemiesManager.instance) {
+            return EnemiesManager.instance;
+        }
+        EnemiesManager.instance = this;
+    }
+
+    static getInstance() {
+        if (!EnemiesManager.instance) {
+            EnemiesManager.instance = new EnemiesManager();
+        }
+        return EnemiesManager.instance;
+    }
 
     initEnemys() {
         this.enemys = {
@@ -413,4 +428,4 @@ class EnemiesManager {
     }
 }
 
-export let enemiesMgr = new EnemiesManager();
+export let enemiesMgr = EnemiesManager.getInstance();

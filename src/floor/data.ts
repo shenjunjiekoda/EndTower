@@ -25,7 +25,7 @@ import { floor23 } from "./floors/floor23";
 import { floor24 } from "./floors/floor24";
 import { floor25 } from "./floors/floor25";
 import { floor26 } from "./floors/floor26";
-import { addBlockEvent, addSwitchFloorBlockEvent, Block, getBlock, getBlockAtPointOnFloor, initBlockInfo } from "./block";
+import { addBlockEvent, addSwitchFloorBlockEvent, Block, createBlock, getBlockAtPointOnFloor, initBlockInfo } from "./block";
 import { isset, toInt } from "../common/util";
 import { playerMgr } from "../player/data";
 import { core } from "../common/global";
@@ -115,11 +115,11 @@ export function getAllFloors(): Record<number, Floor> {
     return floors;
 }
 
-export interface MapData {
-    floorId: number;
-    title: string;
-    transporterEnabled: boolean;
-    blocks: Block[];
+export class MapData {
+    floorId: number = 0;
+    title: string = "";
+    transporterEnabled: boolean = true;
+    blocks: Block[] = [];
 }
 
 export function loadFloor(floorId: number, map?: number[][]): MapData {
@@ -137,12 +137,15 @@ export function loadFloor(floorId: number, map?: number[][]): MapData {
     }
     for (let i = 0; i < CANVAS_BLOCK_WIDTH_CNT; i++) {
         for (let j = 0; j < CANVAS_BLOCK_WIDTH_CNT; j++) {
-            let block = getBlock(j, i, map![i][j]);
+            let block = createBlock(j, i, map![i][j]);
             initBlockInfo(block);
             addBlockEvent(block, j, i, floor.pointTriggerEvents[j + "," + i]);
             addSwitchFloorBlockEvent(floorId, block, j, i, floor.switchFloorEvent[j + "," + i]);
             if (isset(block.event)) {
                 data.blocks.push(block);
+                // if (floorId == 0) {
+                //     console.log('add block ', i, j, block);
+                // }
             }
         }
     }
@@ -155,12 +158,16 @@ export function initFloorMaps() {
     console.log('init floor maps');
     floorMaps = {};
     const floorIds = getAllFloorIds();
+    console.log('floorIds', floorIds);
     for (let i = 0; i < floorIds.length; i++) {
         const floorId = floorIds[i];
         if (floorId in floorMaps) {
             continue;
         }
-        floorMaps[floorId] = { ...loadFloor(floorId) };
+        const loadedMap = loadFloor(floorId);
+        console.log('loadedMap', floorId, loadedMap);
+        floorMaps[floorId] = { ...loadedMap };
+        console.log('init floor map', floorId, floorMaps[floorId]);
     }
 }
 
@@ -175,6 +182,7 @@ export function getMapData(floorID?: number): MapData {
     if (floorID! in floorMaps) {
         return floorMaps[floorID!];
     }
+    console.log('current floorMaps', floorMaps);
     throw new Error('floor map not found:' + floorID);
 }
 
@@ -225,12 +233,18 @@ export function canMoveDirectly(destX: number, destY: number): boolean {
     return false;
 }
 
-export function existTerrain(x: number, y: number, terrainId?: string, floorId?: number): boolean {
+export function existTerrain(x: number, y: number, terrainId?: string, floorId: number = playerMgr.getFloorId()): boolean {
+    console.log('existTerrain', x, y, terrainId, floorId);
     let block = getBlockAtPointOnFloor(x, y, floorId);
-    if (!isset(block) || block?.block?.event?.type != 'terrains') {
+    let blockId = block?.block?.event?.id;
+    let blockType = block?.block?.event?.type;
+    console.log('block', block);
+    console.log('blockId', blockId);
+    console.log('blockType', blockType);
+    if (!isset(block) || blockType != 'terrains') {
         return false;
     }
-    return !isset(terrainId) || block?.block?.event?.id == terrainId;
+    return !isset(terrainId) || blockId == terrainId;
 }
 
 export function stairExists(x: number, y: number, floorId?: number) {

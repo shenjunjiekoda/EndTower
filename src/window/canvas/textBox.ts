@@ -139,7 +139,7 @@ export class TextBoxResolver {
         // 创建背景图案
         console.log('ground image', imageMgr.getGround());
         const background = ui.createPattern(imageMgr.getGround()) as CanvasPattern;
-        canvasAnimate.resetBoxAnimate();
+        canvasAnimate.resetRegionAnimate();
         ui.clearRect();
 
         const left = 10;
@@ -162,6 +162,7 @@ export class TextBoxResolver {
                 const floor = getFloorById()!;
                 people = i18next.t(floor.title) + " - " + this.name!;
             } else {
+                console.log('player name here0', playerMgr.getPlayerName());
                 people = playerMgr.getPlayerName();
             }
             notebook.addNotes(people, contents);
@@ -246,6 +247,7 @@ export class TextBoxResolver {
             if (this.id === 'player') {
                 const playerHeight = playerMgr.getPlayerIconHeight();
                 ui.strokeRect(left + 15 - 1, top! + 40 - 1, 34, playerHeight + 2, undefined, 2);
+                console.log('player name here1', playerMgr.getPlayerName());
                 ui.fillText(playerMgr.getPlayerName(), content_left, top! + 30, undefined, PLAYER_TEXTBOX_FONT);
                 ui.clearRect(left + 15, top! + 40, BLOCK_WIDTH, playerHeight);
                 ui.fillRect(left + 15, top! + 40, BLOCK_WIDTH, playerHeight, background);
@@ -255,9 +257,9 @@ export class TextBoxResolver {
                 ui.fillText(this.name!, content_left, top! + 30, undefined, NPC_TEXTBOX_FONT);
                 if (isset(this.images)) {
                     ui.strokeRect(left + 15 - 1, top! + 40 - 1, 34, 34, undefined, 2);
-                    canvasAnimate.resetBoxAnimate();
+                    canvasAnimate.resetRegionAnimate();
                     console.log('textboxresolver box images', this.images);
-                    canvasAnimate.pushBoxAnimateObj(
+                    canvasAnimate.pushRegionAnimateObj(
                         left + 15,
                         top! + 40,
                         BLOCK_WIDTH,
@@ -267,7 +269,7 @@ export class TextBoxResolver {
                         this.images!,
                         this.icon,
                     );
-                    canvasAnimate.drawBoxAnimate();
+                    canvasAnimate.drawRegionAnimate();
                 }
             }
         }

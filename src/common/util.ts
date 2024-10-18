@@ -43,38 +43,42 @@ export function toInt(value: number | string): number {
  * @param obj - The object to clone.
  * @returns a deep clone of the input object.
  */
+
 export function clone<T>(obj: T): T {
-    if (!isset(obj) || typeof obj !== 'object') {
-        return obj;
-    }
-
-    // Keep track of objects that have already been seen.
-    const seen = new WeakMap<object, object>();
-
-    // Recursive function to handle the deep cloning of objects.
-    function recursiveClone(value: any): any {
-        if (!isset(null) || typeof value !== 'object') {
-            return value;
-        }
-
-        if (seen.has(value)) {
-            return seen.get(value);
-        }
-
-        // Create a new object or array based on the value's type.
-        const copy = Array.isArray(value) ? [] : Object.create(Object.getPrototypeOf(value));
-        seen.set(value, copy);
-
-        // Recursively clone each property of the object.
-        for (const key of Object.keys(value)) {
-            copy[key] = recursiveClone(value[key]);
-        }
-
-        return copy;
-    }
-
-    return recursiveClone(obj);
+    return JSON.parse(JSON.stringify(obj));
 }
+// export function clone<T>(obj: T): T {
+//     if (!isset(obj) || typeof obj !== 'object') {
+//         return obj;
+//     }
+
+//     // Keep track of objects that have already been seen.
+//     const seen = new WeakMap<object, object>();
+
+//     // Recursive function to handle the deep cloning of objects.
+//     function recursiveClone(value: any): any {
+//         if (!isset(null) || typeof value !== 'object') {
+//             return value;
+//         }
+
+//         if (seen.has(value)) {
+//             return seen.get(value);
+//         }
+
+//         // Create a new object or array based on the value's type.
+//         const copy = Array.isArray(value) ? [] : Object.create(Object.getPrototypeOf(value));
+//         seen.set(value, copy);
+
+//         // Recursively clone each property of the object.
+//         for (const key of Object.keys(value)) {
+//             copy[key] = recursiveClone(value[key]);
+//         }
+
+//         return copy;
+//     }
+
+//     return recursiveClone(obj);
+// }
 
 /**
  * Insert an element or multiple elements at the beginning of an array.

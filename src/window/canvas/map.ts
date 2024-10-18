@@ -50,7 +50,7 @@ export function removeBlock(x: number, y: number, floorId?: number) {
     let index = block!.index;
 
     if (floorId == playerMgr.getFloorId()) {
-        canvasAnimate.removeGlobalAnimatePoint(x, y);
+        canvasAnimate.removeMapAnimateBlock(x, y);
         event.clearRect(x * BLOCK_WIDTH, y * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH);
     }
 

@@ -3,7 +3,7 @@ import { config, GameLevel, parseGameLevel, staticConfig } from "../common/confi
 import { BLACK, BLOCK_WIDTH, CANVAS_BLOCK_WIDTH_CNT, DIRECTION_TO_POINT_MAP, FPS, GREEN, MAX, PINK, RED, WHITE, YELLOW } from "../common/constants";
 import { core } from "../common/global";
 import { callertrace, clone, getLocalStorage, isset, log, setLocalStorage, toInt, unshift } from "../common/util";
-import { addBlockEvent, addSwitchFloorBlockEvent, Block, getBlock, getBlockAtPointOnFloor, initBlockInfo } from "../floor/block";
+import { addBlockEvent, addSwitchFloorBlockEvent, Block, createBlock, getBlockAtPointOnFloor, initBlockInfo } from "../floor/block";
 import { existTerrain, getFloorById, getMapData, loadMaps, pushBlockToFloor, saveMaps } from "../floor/data";
 import { switchFloor, toDirection } from "../floor/switch";
 import i18next from "i18next";
@@ -43,12 +43,26 @@ export interface SLData {
 
 export type TriggerEventHandler = (block: Block, callback?: Function) => void;
 
-
-
 class EventManager {
-
+    static Instance: EventManager;
     private openDoorInterval: NodeJS.Timeout | null = null;
     private triggerEvents: Record<string, TriggerEventHandler> = {};
+
+    private constructor() {
+        if (EventManager.Instance) {
+            throw new Error("Error: Instantiation failed: Use EventManager.Instance instead of new.");
+        }
+        EventManager.Instance = this;
+    }
+
+    static getInstance(): EventManager {
+        if (!EventManager.Instance) {
+            EventManager.Instance = new EventManager();
+        }
+        return EventManager.Instance;
+    }
+
+
 
     initTriggerEvents() {
         this.triggerEvents = {
@@ -142,10 +156,6 @@ class EventManager {
         stopPlayer(OnPlayerStop);
     }
 
-    isTextBoxEvent(elem: any) {
-        return typeof elem === 'string';
-    }
-
     handleTextBoxEvent(elem: string) {
         core.updateEventData('type', 'text');
         canvas.drawTextBox(elem);
@@ -175,7 +185,7 @@ class EventManager {
     }
 
     handleAction() {
-        canvasAnimate.resetBoxAnimate();
+        canvasAnimate.resetRegionAnimate();
 
         ui.clearRect()
         ui.setAlpha(1);
@@ -193,7 +203,7 @@ class EventManager {
         console.log('handle cur elem:', elem);
         core.updateEventData('current', elem);
 
-        if (this.isTextBoxEvent(elem)) {
+        if (typeof elem == 'string') {
             this.handleTextBoxEvent(elem);
             return;
         }
@@ -229,7 +239,7 @@ class EventManager {
                     y = data.loc[1] as number;
                 }
                 canvasAnimate.moveBlockAnimate(x!, y!, data.steps, data.time, data.immediateHide,
-                    this.handleAction);
+                    eventManager.handleAction);
                 break;
             case 'show':
                 console.log('show action data:', data);
@@ -240,12 +250,12 @@ class EventManager {
                     data.loc.forEach((loc: number[]) => {
                         canvasAnimate.showBlockAnimate(loc[0], loc[1], data.floorId);
                     });
-                    this.handleAction();
+                    eventManager.handleAction();
                 } else {
                     data.loc.forEach((loc: number[]) => {
                         canvasAnimate.showBlockAnimate(loc[0], loc[1], data.floorId);
                     });
-                    this.handleAction();
+                    eventManager.handleAction();
                 }
                 break;
             case 'hide':
@@ -415,15 +425,29 @@ class EventManager {
     }
 
     evalValue(value: string): any {
-        value = value.replace(/status:([\w\d_]+)/g, "playerMgr.getPlayerProperty('\$1')");
-        value = value.replace(/item:([\w\d_]+)/g, "playerMgr.getItemCount('\$1')");
-        value = value.replace(/flag:([\w\d_]+)/g, "core.getFlag('\$1')");
+        console.log('eval value:', value);
+        value = value.replace(/status:([\w\d_]+)/g, "this.getPlayerProperty('\$1')");
+        value = value.replace(/item:([\w\d_]+)/g, "this.getItemCount('\$1')");
+        value = value.replace(/flag:([\w\d_]+)/g, "this.getFlag('\$1')");
         return eval(value);
+    }
+
+    getPlayerProperty(name: string): any {
+        return playerMgr.getPlayerProperty(name);
+    }
+
+    getItemCount(itemId: string): number {
+        return playerMgr.getItemCount(itemId);
+    }
+
+    getFlag(name: string): any {
+        return core.getFlag(name);
     }
 
     @log
     @callertrace
     resolveText(text: string): string {
+        console.log('resolve text:', text);
         text = text.replace(/{player\}/g, playerMgr.getPlayerName());
         return text.replace(/\${([^}]+)}/g, (word, value) => {
             return this.evalValue(value);
@@ -514,7 +538,7 @@ class EventManager {
         canvasAnimate.closeUIPanel();
         const IsTrueEnd = playerMgr.getPlayerLevel() >= 120;
         const onStop = () => {
-            canvasAnimate.resetGlobalAnimate();
+            canvasAnimate.resetMapsAnimate();
             canvas.clearAllCanvas();
             let contents = ["你赢了！"];
             if (IsTrueEnd) {
@@ -590,11 +614,14 @@ class EventManager {
     @log
     @callertrace
     handleOpenDoor(id: string, x: number, y: number, needKey: boolean = true, callback?: Function) {
+        console.log('handleOpenDoor: ', id, x, y, needKey, callback);
         if (isset(this.openDoorInterval)) {
+            console.log('handleOpenDoor: interval exist');
             return;
         }
 
         if (!existTerrain(x, y, id)) {
+            console.log('handleOpenDoor: not exist terrain');
             if (isset(callback)) {
                 callback!();
             }
@@ -936,8 +963,9 @@ class EventManager {
     @callertrace
     handleResetData(playerData: PlayerData, level: GameLevel, floorId: number, flags?: Record<string, any>, route_?: string[], notes?: Record<string, string[]>) {
         canvas.clearAllInterval();
-
+        console.log('before set playerdata:', playerMgr.getPlayerData());
         playerMgr.setPlayerData(clone(playerData));
+        console.log('after set playerdata:', playerMgr.getPlayerData());
         imageMgr.setPlayerImage();
         core.setStarted(true);
 
@@ -1057,7 +1085,7 @@ class EventManager {
             snipe.nx = x + DIRECTION_TO_POINT_MAP[snipe.direction].x;
             snipe.ny = y + DIRECTION_TO_POINT_MAP[snipe.direction].y;
 
-            canvasAnimate.removeGlobalAnimatePoint(x, y);
+            canvasAnimate.removeMapAnimateBlock(x, y);
 
             const block: Block = getBlockAtPointOnFloor(x, y)!.block;
             snipe.blockIcon = 0;
@@ -1100,10 +1128,10 @@ class EventManager {
                 let nBlock: Block = clone(t.block!);
                 nBlock.x = t.nx!; nBlock.y = t.ny!;
                 getMapData().blocks.push(nBlock);
-                canvasAnimate.pushGlobalAnimateObj(2, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, t.blockImages!, t.blockIcon);
+                canvasAnimate.pushMapsAnimateObj(2, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, t.blockImages!, t.blockIcon);
                 event.drawImage(t.blockImages![0], 0, t.blockIcon! * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, BLOCK_WIDTH, BLOCK_WIDTH);
             });
-            canvasAnimate.syncGlobalAnimate();
+            canvasAnimate.syncMapsAnimate();
             statusBar.syncPlayerStatus();
             return;
         }
@@ -1327,9 +1355,9 @@ class EventManager {
         nameInput.placeholder = i18next.t('input_name_tip');
 
         nameInput.style.transform = `translate()`;
-
+        let playerName = "";
         const onNameSubmit = () => {
-            const playerName = nameInput.value.trim();
+            playerName = nameInput.value.trim();
             if (playerName.length > 0) {
                 // 隐藏输入框
                 hideDomNode('nameInput');
@@ -1343,7 +1371,6 @@ class EventManager {
             }
             console.log('start text: ', staticConfig.startText);
             const onDrawTextComplete = () => {
-
                 const postShowBattleConfirm = () => {
                     switchFloor(staticConfig.initFloorId, undefined, playerMgr.getPlayerLoc());
                 }
@@ -1354,6 +1381,8 @@ class EventManager {
                 showSexChoose(() => {
                     playerMgr.resetPlayerData();
                     playerMgr.setupPlayerDataByGameLevel(gameLevel)
+                    playerMgr.setPlayerName(playerName);
+                    playerMgr.setPlayerIsMan(getLocalStorage('isMan', true));
                     eventManager.handleResetData(playerMgr.getPlayerData(), gameLevel, staticConfig.initFloorId);
                     canvas.drawText(staticConfig.startText, onDrawTextComplete);
                 });
@@ -1376,4 +1405,4 @@ class EventManager {
     }
 }
 
-export const eventManager = new EventManager();
+export const eventManager = EventManager.getInstance();

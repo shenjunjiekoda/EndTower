@@ -41,7 +41,7 @@ class AnimateManager {
     }
 
     get(animateName: string) {
-        if (animateName in animates) {
+        if (animateName in this.animateResource) {
             return this.animateResource[animateName];
         }
         throw new Error(`Animate ${animateName} not found`);

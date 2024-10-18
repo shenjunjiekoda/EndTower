@@ -28,9 +28,23 @@ interface ClickLoc {
 }
 
 class InteractManager {
-
+    private static instance: InteractManager;
     private downTime: Date | null = null;
     private holdingKeys: number[] = [];
+
+    constructor() {
+        if (InteractManager.instance) {
+            throw new Error("Error: Instantiation failed: Use InteractManager.getInstance() instead of new.");
+        }
+        InteractManager.instance = this;
+    }
+
+    static getInstance(): InteractManager {
+        if (!InteractManager.instance) {
+            InteractManager.instance = new InteractManager();
+        }
+        return InteractManager.instance;
+    }
 
     getClickLoc(x: number, y: number): ClickLoc {
         let statusBar = { x: 0, y: 0 };
@@ -218,7 +232,7 @@ class InteractManager {
             if (!core.hasEventDataSelection())
                 canvasAnimate.closeUIPanel();
             else {
-                canvasAnimate.resetBoxAnimate();
+                canvasAnimate.resetRegionAnimate();
                 canvas.drawMaps(core.getEventDataSelection());
             }
             return;
@@ -247,7 +261,7 @@ class InteractManager {
             if (!core.hasEventDataSelection())
                 canvasAnimate.closeUIPanel();
             else {
-                canvasAnimate.resetBoxAnimate();
+                canvasAnimate.resetRegionAnimate();
                 canvas.drawMaps(core.getEventDataSelection());
             }
             return;
@@ -516,7 +530,7 @@ class InteractManager {
                 }
 
                 core.updateEventData('actions', []);
-                canvasAnimate.resetBoxAnimate();
+                canvasAnimate.resetRegionAnimate();
                 if (core.hasEventData('fromList'))
                     drawQuickShop();
                 else
@@ -536,7 +550,7 @@ class InteractManager {
             }
 
             core.updateEventData('actions', []);
-            canvasAnimate.resetBoxAnimate();
+            canvasAnimate.resetRegionAnimate();
             if (core.hasEventData('fromList')) {
                 drawQuickShop();
             }
@@ -1689,5 +1703,5 @@ class InteractManager {
     }
 }
 
-export let interact = new InteractManager();
+export let interact = InteractManager.getInstance();
 

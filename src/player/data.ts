@@ -91,7 +91,23 @@ export const base_player_data: PlayerData = {
 };
 
 class PlayerManager {
+    static instance: PlayerManager;
+
     private player_data: PlayerData = { ...base_player_data };
+    
+    private constructor() {
+        if (PlayerManager.instance) {
+            throw new Error("Error: Instantiation failed: Use PlayerManager.getInstance() instead of new.");
+        }
+        PlayerManager.instance = this;
+    }
+
+    static getInstance(): PlayerManager {
+        if (!PlayerManager.instance) {
+            PlayerManager.instance = new PlayerManager();
+        }
+        return PlayerManager.instance;
+    }
 
     // 根据选择的难度初始化玩家数据 | Init player data by selected difficulty
     @log
@@ -494,7 +510,9 @@ class PlayerManager {
         this.player_data.name = name;
     }
 
+    @log
     getPlayerName() {
+        console.log('get player name', this.player_data.name);
         return this.player_data.name;
     }
 
@@ -526,4 +544,4 @@ class PlayerManager {
     }
 }
 
-export const playerMgr = new PlayerManager();
+export const playerMgr = PlayerManager.getInstance();

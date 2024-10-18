@@ -7,12 +7,28 @@ import { playerMgr } from "../../player/data";
 import { enemiesMgr } from "../../enemies/data";
 
 export class BlockingContext {
+    private static instance: BlockingContext;
+
     // (x, y)点的伤害 | damage of (x, y) point
     damage: { [key: string]: number } = {};
     // 地图怪物id | enemy on the map
     map: { [key: string]: string } = {};
     // (x, y)是否有阻击 | whether (x, y) has block
     hasBlock: { [key: string]: boolean } = {};
+
+    private constructor() { 
+        if (BlockingContext.instance) {
+            throw new Error("Error: Instantiation failed: Use BlockingContext.getInstance() instead of new.");
+        }
+        BlockingContext.instance = this;
+    }
+
+    static getInstance() {
+        if (!BlockingContext.instance) {
+            BlockingContext.instance = new BlockingContext();
+        }
+        return BlockingContext.instance;
+    }
 
     reset() {
         this.damage = {};
@@ -21,7 +37,7 @@ export class BlockingContext {
     }
 };
 
-export let blockingCtx = new BlockingContext();
+export let blockingCtx = BlockingContext.getInstance();
 
 // 更新全地图显伤 | update all map's damage display
 export function updateDamageDisplay() {

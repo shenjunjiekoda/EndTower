@@ -175,7 +175,7 @@ export function moveAction(callback?: Function) {
         }
 
         console.log('stop player at ', direction, ' (', x, ',', y, ')');
-        drawPlayer(direction, x, y, 'stop');
+        drawPlayer(direction, x, y);
 
         if (autoRoute.getRemainingRoutesLength() == 0) {
             autoRoute.clearRemainingRoutes();

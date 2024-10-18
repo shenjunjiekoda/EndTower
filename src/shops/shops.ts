@@ -89,8 +89,25 @@ let expShop2: Shop = {
 };
 
 class ShopManager {
+    static instance: ShopManager;
     private shops: Record<string, Shop> = {};
     private shopVisited!: Record<string, boolean>;
+    constructor() {
+        if (ShopManager.instance) {
+            throw new Error("Error: Instantiation failed: Use ShopManager.getInstance() instead of new.");
+        }
+        ShopManager.instance = this;
+        this.initShops();
+        this.shopVisited = {};
+    }
+
+    static getInstance() {
+        if (!ShopManager.instance) {
+            ShopManager.instance = new ShopManager();
+        }
+        return ShopManager.instance;
+    }
+
     initShops() {
         [moneyShop1, expShop1, keyShop, moneyShop2, expShop2].forEach(shop => {
             this.shops[shop.id] = { ...shop };
@@ -135,4 +152,4 @@ class ShopManager {
 
 }
 
-export let shopMgr = new ShopManager();
+export let shopMgr = ShopManager.getInstance();
