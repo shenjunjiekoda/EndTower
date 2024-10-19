@@ -143,9 +143,6 @@ export function loadFloor(floorId: number, map?: number[][]): MapData {
             addSwitchFloorBlockEvent(floorId, block, j, i, floor.switchFloorEvent[j + "," + i]);
             if (isset(block.event)) {
                 data.blocks.push(block);
-                // if (floorId == 0) {
-                //     console.log('add block ', i, j, block);
-                // }
             }
         }
     }

@@ -169,7 +169,11 @@ class ImageManager {
 }
 
 
-export let imageMgr = ImageManager.getInstance();
+export let imageMgr: ImageManager;
+
+export function initImageManager() {
+    imageMgr = ImageManager.getInstance();
+}
 
 
 interface PlayerIcon {

@@ -1,7 +1,7 @@
 import { BLOCK_WIDTH, INIT_CANVAS_WIDTH, NPC_TEXTBOX_FONT, PLAYER_TEXTBOX_FONT, TEXTBOX_FONT, WHITE } from "../../common/constants";
 import { core } from "../../common/global";
 import { colorArrayToRGB, isset } from "../../common/util";
-import { eventManager } from "../../events/events";
+import eventMgr from "../../events/manager";
 import { playerMgr } from "../../player/data";
 import { getPlayerIconLineOfDirection, getPlayerIconStillOfDirection, imageMgr } from "../../resource/images";
 import { textAttribute } from "../../window/textAttribute";
@@ -130,7 +130,7 @@ export class TextBoxResolver {
         }
 
         // 替换文本中的特殊字符
-        this.content = eventManager.resolveText(this.content);
+        this.content = eventMgr.resolveText(this.content);
         console.log('resolved text box content: ', this.content);
     }
 

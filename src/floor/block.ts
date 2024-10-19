@@ -255,15 +255,14 @@ export function createBlock(x: number, y: number, id: number | string): Block {
 
     const parsedId = parseInt(id);
 
-    let block: Block = new Block( x, y, parsedId );
+    let block: Block = new Block(x, y, parsedId);
     if (isset(enable)) {
         block.enable = enable!;
     }
 
     if (parsedId in init_block_events) {
-        block.event = init_block_events[parsedId];
+        block.event = clone(init_block_events[parsedId]);
     }
-
     return block;
 }
 
@@ -328,7 +327,6 @@ export function addBlockEvent(block: Block, x: number, y: number, event_input: a
     }
 
     if (!isset(block.event)) {
-        // console.log('no event for block, set as terrains');
         block.event = { type: 'terrains', id: 'normalBlock', noPass: false };
     }
 
@@ -351,45 +349,30 @@ export function addBlockEvent(block: Block, x: number, y: number, event_input: a
 
     if (!isset(block.event!.trigger)) {
         block.event!.trigger = event.trigger ? event.trigger : 'action';
-    } else if (isset(event.trigger) && event.trigger! != 'checkBlock') {
+    } else if (isset(event.trigger)) {
         block.event!.trigger = event.trigger;
     }
 
-    if (x == 6 && y == 2) {
-        console.log("6,2 event:", event);
-        console.log("6,2 block event:", block.event);
-    }
     let event_to_clone: BlockEvent = clone(block.event!);
     for (const key in event) {
         if (key !== 'enable' && key !== 'trigger') {
             const clonedValue = clone(event[key]);
-            console.log("key,value", key, clonedValue);
-            console.log('before update event key', key, event_to_clone![key as keyof BlockEvent], event_to_clone!.data, event_to_clone);
             event_to_clone![key as keyof BlockEvent] = clonedValue;
-            console.log('after update event key', key, event_to_clone![key as keyof BlockEvent], event_to_clone!.data, event_to_clone);
         }
     }
 
-    if (x == 6 && y == 2) {
-        console.log("6,2 block event here3:", event);
-    }
-
-    if (x == 6 && y == 2) {
-        console.log("6,2 block event here4:", block, event_to_clone, event_to_clone!.data);
-    }
     block.event = clone(event_to_clone);
-    if (x == 6 && y == 2) {
-        console.log("6,2 block event here5:", block, block.event, block.event!.data);
-    }
 }
 
 export function addSwitchFloorBlockEvent(floorID: number, block: Block, x: number, y: number, event?: any): void {
     if (!isset(event)) {
         return;
     }
-    if (x == 6 && y == 2) {
-        console.log('6,2 add switch floor for', floorID, block, x, y, event);
-    }
+
+    console.log('add switch floor block event for', floorID, block, x, y, event);
+    // if (x == 6 && y == 2) {
+    // console.log('6,2 add switch floor for', floorID, block, x, y, event);
+    // }
 
     addBlockEvent(block, x, y, { trigger: 'switchFloor', data: clone(event!) });
 }

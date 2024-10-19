@@ -428,4 +428,8 @@ class EnemiesManager {
     }
 }
 
-export let enemiesMgr = EnemiesManager.getInstance();
+export let enemiesMgr: EnemiesManager;
+
+export function initEnemiesManager() {
+    enemiesMgr = EnemiesManager.getInstance();
+}

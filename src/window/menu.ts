@@ -6,7 +6,7 @@ import { BLACK } from "../common/constants";
 import { canvas, event, initCanvasContexts, ui } from "./canvas/canvas";
 import { canvasAnimate } from "./canvas/animates";
 import i18next from "../common/i18n";
-import { eventManager } from "../events/events";
+import eventMgr from "../events/manager";
 import { config, initGlobalConfig } from "../common/config";
 import { imageMgr } from "../resource/images";
 import gameWindow from "./gameWindow";
@@ -43,7 +43,7 @@ class Menu {
         initFloorMaps();
         // logExecutionTime(initFloorMaps)();
         // logExecutionTime(initFloors)();
-        eventManager.initTriggerEvents();
+        eventMgr.initTriggerEvents();
 
         canvasAnimate.setRequestAnimationFrame();
 
@@ -103,12 +103,12 @@ class Menu {
 
     private registerButtonsClick() {
         console.log('Register buttons click...');
-        getDomNode('startGame').onclick = eventManager.handleClickStartGameButtonEvent;
-        getDomNode('loadGame').onclick = () => eventManager.handleLoadGame();
+        getDomNode('startGame').onclick = eventMgr.handleClickStartGameButtonEvent;
+        getDomNode('loadGame').onclick = () => eventMgr.handleLoadGame();
 
-        getDomNode('easyLevel').onclick = () => eventManager.hanleStartGameEvent('easy');
-        getDomNode('normalLevel').onclick = () => eventManager.hanleStartGameEvent('normal');
-        getDomNode('hardLevel').onclick = () => eventManager.hanleStartGameEvent('hard');
+        getDomNode('easyLevel').onclick = () => eventMgr.hanleStartGameEvent('easy');
+        getDomNode('normalLevel').onclick = () => eventMgr.hanleStartGameEvent('normal');
+        getDomNode('hardLevel').onclick = () => eventMgr.hanleStartGameEvent('hard');
     }
 
 }

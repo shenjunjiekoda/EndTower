@@ -8,7 +8,7 @@ import { core } from "../../common/global";
 import { getBlockAtPointOnFloor } from "../../floor/block";
 import { getFloorById } from "../../floor/data";
 import { route } from "../../player/route";
-import { eventManager } from "../../events/events";
+import eventMgr from "../../events/manager";
 import { config } from "../../common/config";
 import statusBar from "../../window/statusBar";
 
@@ -115,7 +115,7 @@ function moveOneStep() {
         if (playerMgr.getPlayerHP() <= 0) {
             playerMgr.setPlayerHP(0);
             statusBar.syncPlayerStatus();
-            eventManager.handleGameover('poison');
+            eventMgr.handleGameover('poison');
             return;
         }
         statusBar.syncPlayerStatus();
@@ -171,7 +171,7 @@ export function moveAction(callback?: Function) {
 
         if (canMove) {
             // 非箭头：触发
-            eventManager.handleTriggerPointEvent(x + DIRECTION_TO_POINT_MAP[direction].x, y + DIRECTION_TO_POINT_MAP[direction].y);
+            eventMgr.handleTriggerPointEvent(x + DIRECTION_TO_POINT_MAP[direction].x, y + DIRECTION_TO_POINT_MAP[direction].y);
         }
 
         console.log('stop player at ', direction, ' (', x, ',', y, ')');
@@ -211,8 +211,8 @@ export function moveAction(callback?: Function) {
                 drawPlayer(playerLoc.direction, playerLoc.x, playerLoc.y);
             }
 
-            eventManager.handleTriggerPointEvent(playerMgr.getPlayerLocX(), playerMgr.getPlayerLocY());
-            eventManager.checkAndHandleBlockEvent();
+            eventMgr.handleTriggerPointEvent(playerMgr.getPlayerLocX(), playerMgr.getPlayerLocY());
+            eventMgr.checkAndHandleBlockEvent();
             if (isset(callback)) {
                 callback!();
             }

@@ -52,7 +52,7 @@ class AnimateManager {
         console.log(`init animates: ${animateNames}`);
         animateNames.forEach((animateName) => {
             console.log(`${this} importing animate: ${animateName} `);
-            
+
             this.loadAnimate(animateName, (animateName, animate) => {
                 console.log(`loaded animate: ${animateName}`, animate);
                 this.animateResource[animateName] = animate;
@@ -82,4 +82,10 @@ class AnimateManager {
 }
 
 
-export let animates = AnimateManager.getInstance();
+export let animates: AnimateManager;
+
+export function initAnimateManager() {
+    animates = AnimateManager.getInstance();
+}
+
+

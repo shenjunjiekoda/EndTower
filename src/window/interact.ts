@@ -6,7 +6,7 @@ import { autoRoute } from "../player/autoroute";
 import { BLOCK_WIDTH, CANVAS_BLOCK_WIDTH_CNT, DEFAULT_TIMEOUT_MILLS, GRAY, POINT_TO_DIRECTION_MAP } from "../common/constants";
 import { callertrace, isset, log, setLocalStorage, toInt } from "../common/util";
 import { PlayerLocation, playerMgr } from "../player/data";
-import { eventManager } from "../events/events";
+import eventMgr from "../events/manager";
 import { canvasAnimate } from "./canvas/animates";
 import { drawAbout, drawBookDetail, drawCursor, drawEncyclopedia, drawHelp, drawOpenEncyclopedia, drawQuickShop, drawSettings, drawSLPanel, drawSwitchs, drawToolbox, drawTransport } from "./canvas/functionality";
 import { movePlayer } from "./canvas/player";
@@ -168,7 +168,7 @@ class InteractManager {
                 break;
             case 'action':
                 if (core.getEventData('type') == 'text') {
-                    eventManager.handleAction();
+                    eventMgr.handleAction();
                 }
                 break;
             default:
@@ -409,7 +409,7 @@ class InteractManager {
         console.log('key up action keyCode: ' + keyCode);
         console.log('key up action event: ', core.getEvent());
         if (type == 'text' && [13, BLOCK_WIDTH, 67].includes(keyCode)) {
-            eventManager.handleAction();
+            eventMgr.handleAction();
             return;
         }
 
@@ -420,8 +420,8 @@ class InteractManager {
                 // 13: 确定 BLOCK_WIDTH:空格 67:C
                 if ([13, BLOCK_WIDTH, 67].includes(keyCode)) {
                     route.push('choices:' + core.getEventDataSelection());
-                    eventManager.doOrInsertAction(choices[core.getEventDataSelection()].action);
-                    eventManager.handleAction();
+                    eventMgr.doOrInsertAction(choices[core.getEventDataSelection()].action);
+                    eventMgr.handleAction();
                 }
             }
 
@@ -469,7 +469,7 @@ class InteractManager {
         let arr = expression.split("+=");
         if (arr.length != 2) return;
         let name = arr[0];
-        let value = eventManager.evalValue(arr[1]);
+        let value = eventMgr.evalValue(arr[1]);
         if (name.startsWith("status:")) {
             let status = name.substring(7);
             playerMgr.setPlayerProperty(status, value);
@@ -521,7 +521,7 @@ class InteractManager {
 
                 shop.times++;
 
-                eventManager.handleOpenShop(core.getEventData('id'));
+                eventMgr.handleOpenShop(core.getEventData('id'));
             }
             else if (y == topIndex + choices.length) {
                 // 离开
@@ -738,7 +738,7 @@ class InteractManager {
                 case 4:
                     core.setEventDataSelection(1);
                     canvas.drawConfirmBox("你确定要重新开始吗？", () => {
-                        eventManager.handleRestart();
+                        eventMgr.handleRestart();
                     }, () => {
                         core.setEventDataSelection(3);
                         drawSettings();
@@ -867,7 +867,7 @@ class InteractManager {
                 break;
             case 71: // G
                 if (!playerMgr.isPlayerMoving()) {
-                    eventManager.handleUseToolBarTransporter(true);
+                    eventMgr.handleUseToolBarTransporter(true);
                 }
                 break;
             case 88: // X
@@ -876,15 +876,15 @@ class InteractManager {
                 }
                 break;
             case 65: // A
-                eventManager.doSL("autoSave", "load");
+                eventMgr.doSL("autoSave", "load");
                 break;
             case 83: // S
                 if (!playerMgr.isPlayerMoving())
-                    eventManager.handleSaveGame(true);
+                    eventMgr.handleSaveGame(true);
                 break;
             case 68: // D
                 if (!playerMgr.isPlayerMoving())
-                    eventManager.handleLoadGame(true);
+                    eventMgr.handleLoadGame(true);
                 break;
             case 69: // E
                 if (!playerMgr.isPlayerMoving())
@@ -892,15 +892,15 @@ class InteractManager {
                 break;
             case 84: // T
                 if (!playerMgr.isPlayerMoving())
-                    eventManager.handleOpenToolbox(true);
+                    eventMgr.handleOpenToolbox(true);
                 break;
             case 90: // Z
                 if (!playerMgr.isPlayerMoving())
-                    eventManager.handleTurnPlayer();
+                    eventMgr.handleTurnPlayer();
                 break;
             case 75: // K
                 if (!playerMgr.isPlayerMoving())
-                    eventManager.handleOpenQuickShop(true);
+                    eventMgr.handleOpenQuickShop(true);
                 break;
             case 72: // H
                 if (!core.isLocked() && !playerMgr.isPlayerMoving())
@@ -1070,7 +1070,7 @@ class InteractManager {
         if (core.getEventData('type') == 'text') {
             // 文字
             console.log('clickAction find event text, do action');
-            eventManager.handleAction();
+            eventMgr.handleAction();
             return;
         }
         let data = core.getEventDataCurrent();
@@ -1088,8 +1088,8 @@ class InteractManager {
                     // 选择
                     route.push("choices:" + (y - topIndex));
                     console.log('y - topIndex: ', y - topIndex);
-                    eventManager.doOrInsertAction(choices[y - topIndex].action);
-                    eventManager.handleAction();
+                    eventMgr.doOrInsertAction(choices[y - topIndex].action);
+                    eventMgr.handleAction();
                 }
             }
         }
@@ -1162,7 +1162,7 @@ class InteractManager {
 
     toolBoxOnClickHandler() {
         if (core.isStarted()) {
-            eventManager.handleOpenToolbox(true);
+            eventMgr.handleOpenToolbox(true);
         }
 
     }
@@ -1447,10 +1447,10 @@ class InteractManager {
         if ([13, BLOCK_WIDTH, 67].includes(keyCode)) {
             // 13: enter, BLOCK_WIDTH: space, 67: c
             if (offset == 0) {
-                eventManager.doSL("autoSave", core.getEventId()!);
+                eventMgr.doSL("autoSave", core.getEventId()!);
             }
             else {
-                eventManager.doSL(5 * page + offset, core.getEventId()!);
+                eventMgr.doSL(5 * page + offset, core.getEventId()!);
             }
             return;
         }
@@ -1484,19 +1484,19 @@ class InteractManager {
         index = 6 * page + 1;
         if (y >= 1 && y <= 4) {
             if (x >= 1 && x <= 3)
-                eventManager.doSL("autoSave", core.getEventId()!);
+                eventMgr.doSL("autoSave", core.getEventId()!);
             if (x >= 5 && x <= 7)
-                eventManager.doSL(5 * page + 1, core.getEventId()!);
+                eventMgr.doSL(5 * page + 1, core.getEventId()!);
             if (x >= 9 && x <= 11)
-                eventManager.doSL(5 * page + 2, core.getEventId()!);
+                eventMgr.doSL(5 * page + 2, core.getEventId()!);
         }
         if (y >= 7 && y <= 10) {
             if (x >= 1 && x <= 3)
-                eventManager.doSL(5 * page + 3, core.getEventId()!);
+                eventMgr.doSL(5 * page + 3, core.getEventId()!);
             if (x >= 5 && x <= 7)
-                eventManager.doSL(5 * page + 4, core.getEventId()!);
+                eventMgr.doSL(5 * page + 4, core.getEventId()!);
             if (x >= 9 && x <= 11)
-                eventManager.doSL(5 * page + 5, core.getEventId()!);
+                eventMgr.doSL(5 * page + 5, core.getEventId()!);
         }
     }
 
@@ -1553,7 +1553,7 @@ class InteractManager {
                     canvas.drawText(reason!);
                     return;
                 }
-                eventManager.handleOpenShop(shopIds[y - topIndex], true);
+                eventMgr.handleOpenShop(shopIds[y - topIndex], true);
                 if (core.getEventId() == 'shop')
                     core.updateEventData('fromList', true);
             }
@@ -1686,22 +1686,26 @@ class InteractManager {
 
     transporterOnClickHandler() {
         if (core.isStarted()) {
-            eventManager.handleUseToolBarTransporter(true);
+            eventMgr.handleUseToolBarTransporter(true);
         }
     }
 
     saveImageOnClickHandler() {
         if (core.isStarted()) {
-            eventManager.handleSaveGame(true);
+            eventMgr.handleSaveGame(true);
         }
     }
 
     loadImageOnClickHandler() {
         if (core.isStarted()) {
-            eventManager.handleLoadGame(true);
+            eventMgr.handleLoadGame(true);
         }
     }
 }
 
-export let interact = InteractManager.getInstance();
+export let interact: InteractManager;
+
+export function initInteractManager() {
+    interact = InteractManager.getInstance();
+}
 

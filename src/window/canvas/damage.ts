@@ -16,7 +16,7 @@ export class BlockingContext {
     // (x, y)是否有阻击 | whether (x, y) has block
     hasBlock: { [key: string]: boolean } = {};
 
-    private constructor() { 
+    private constructor() {
         if (BlockingContext.instance) {
             throw new Error("Error: Instantiation failed: Use BlockingContext.getInstance() instead of new.");
         }
@@ -37,7 +37,11 @@ export class BlockingContext {
     }
 };
 
-export let blockingCtx = BlockingContext.getInstance();
+export let blockingCtx: BlockingContext;
+
+export function initBlockingContext() {
+    blockingCtx = BlockingContext.getInstance();
+}
 
 // 更新全地图显伤 | update all map's damage display
 export function updateDamageDisplay() {

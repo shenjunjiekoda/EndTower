@@ -12,7 +12,7 @@ import { updateDamageDisplay } from "../window/canvas/damage";
 import i18next from "i18next";
 import { enemiesMgr } from "../enemies/data";
 import { canvasAnimate } from "../window/canvas/animates";
-import { eventManager } from "../events/events";
+import eventMgr from "../events/manager";
 import { BLOCK_WIDTH } from "../common/constants";
 import { removeBlockByIds } from "../window/canvas/map";
 import { switchFloor } from "../floor/switch";
@@ -198,6 +198,9 @@ class ItemManager {
         this.checkAndSetIndirectEquipment();
     }
 
+    existItem(id: string): boolean {
+        return id in this.items;
+    }
 
     getItemByID(id: string): Item {
         if (id in this.items) {
@@ -593,7 +596,7 @@ class ItemManager {
             return;
         }
         if (itemId == 'fly') {
-            eventManager.handleUseToolBarTransporter(false);
+            eventMgr.handleUseToolBarTransporter(false);
             return;
         }
         if (itemId == 'centerFly') {
@@ -667,7 +670,7 @@ class ItemManager {
                     canvas.drawTip(i18next.t('use_item') + this.items[itemId].name);
 
                     if (itemId == 'bomb' || itemId == 'hammer') {
-                        eventManager.handlePostUseBomb();
+                        eventMgr.handlePostUseBomb();
                     }
                 });
                 break;
@@ -735,10 +738,14 @@ class ItemManager {
             return;
 
         if (block!.block.event?.trigger == 'getItem') {
-            eventManager.handleGetItem(block!.block.event.id, 1, nextX, nextY);
+            eventMgr.handleGetItem(block!.block.event.id, 1, nextX, nextY);
             route.push("getNext");
         }
     }
 }
 
-export const itemMgr = ItemManager.getInstance();
+export let itemMgr: ItemManager;
+
+export function initItemManager() {
+    itemMgr = ItemManager.getInstance()
+}

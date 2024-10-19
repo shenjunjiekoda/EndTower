@@ -7,7 +7,7 @@ import { canvasAnimate } from "./animates";
 import { config } from "../../common/config";
 import { playerMgr } from "../../player/data";
 import { core } from "../../common/global";
-import { eventManager } from "events/events";
+import eventMgr from "../../events/manager";
 import { TextBoxResolver } from "./textBox";
 import { autoRoute } from "../../player/autoroute";
 import { enemiesMgr } from "../../enemies/data";
@@ -471,7 +471,7 @@ class CanvasManager {
         if (isset(text)) {
             console.log('draw text: ', text, callback);
             if (core.isEventSet() && core.getEventId() == 'action') {
-                eventManager.doOrInsertAction(text as string, undefined, undefined, callback);
+                eventMgr.doOrInsertAction(text as string, undefined, undefined, callback);
                 return;
             }
 
@@ -571,8 +571,8 @@ class CanvasManager {
                 }
             }
 
-            console.log('eventManager', eventManager);
-            content = eventManager.resolveText(content!);
+            console.log('eventsManager', eventMgr);
+            content = eventMgr.resolveText(content!);
 
             if (id == 'player' || isset(images)) {
                 content_left = left + 60;
@@ -650,7 +650,7 @@ class CanvasManager {
         ui.setTextAlign('center');
         for (let i = 0; i < choices.length; i++) {
             let text = isset(choices[i].text) ? choices[i].text : choices[i];
-            ui.fillText(eventManager.resolveText(text), INIT_CANVAS_WIDTH / 2, choice_top + BLOCK_WIDTH * i, WHITE, CHOICEBOX_FONT);
+            ui.fillText(eventMgr.resolveText(text), INIT_CANVAS_WIDTH / 2, choice_top + BLOCK_WIDTH * i, WHITE, CHOICEBOX_FONT);
         }
 
         if (choices.length > 0) {
@@ -663,7 +663,7 @@ class CanvasManager {
             }
             const c = choices[selection];
             let text = isset(c.text) ? c.text : c;
-            const len = ui.measureTextWidth(eventManager.resolveText(text));
+            const len = ui.measureTextWidth(eventMgr.resolveText(text));
             ui.strokeRect(INIT_CANVAS_WIDTH - len / 2 - 5, choice_top + BLOCK_WIDTH * selection - 20, len + 10, 28, GOLD, 2);
         }
     }
@@ -779,4 +779,8 @@ class CanvasManager {
 
 }
 
-export let canvas = CanvasManager.getInstance();
+export let canvas: CanvasManager;
+
+export function initCanvasManager() {
+    canvas = CanvasManager.getInstance();
+}

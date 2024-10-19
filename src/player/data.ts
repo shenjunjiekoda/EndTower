@@ -2,7 +2,6 @@ import { GameLevel } from "../common/config";
 import { DIRECTION_TO_POINT_MAP } from "../common/constants";
 import { core } from "../common/global";
 import { callertrace, isset, log } from "../common/util";
-import { eventManager } from "../events/events";
 import { getBlockAtPointOnFloor } from "../floor/block";
 import i18next from "i18next";
 import { itemMgr } from "../items/data";
@@ -94,7 +93,7 @@ class PlayerManager {
     static instance: PlayerManager;
 
     private player_data: PlayerData = { ...base_player_data };
-    
+
     private constructor() {
         if (PlayerManager.instance) {
             throw new Error("Error: Instantiation failed: Use PlayerManager.getInstance() instead of new.");
@@ -216,7 +215,7 @@ class PlayerManager {
     getPlayerTools() {
         return this.player_data.items.tools;
     }
-    
+
     hasPlayerTool(toolName: string) {
         return toolName in this.player_data.items.tools && this.player_data.items.tools[toolName] > 0;
     }
@@ -269,6 +268,9 @@ class PlayerManager {
     @callertrace
     @log
     getItemCount(itemId: string) {
+        if (!itemMgr.existItem(itemId)) {
+            return 0;
+        }
         const item = itemMgr.getItemByID(itemId);
         const itemType = item.type
         console.log('itemType', itemType);
@@ -544,4 +546,8 @@ class PlayerManager {
     }
 }
 
-export const playerMgr = PlayerManager.getInstance();
+export let playerMgr: PlayerManager;
+
+export function InitPlayerManager() {
+    playerMgr = PlayerManager.getInstance();
+}

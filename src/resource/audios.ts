@@ -1,6 +1,6 @@
 import { callertrace, importAll, isset, log, logExecutionTime } from "../common/util";
 
-const AUDIO_OUTPUT_DIR='audios'
+const AUDIO_OUTPUT_DIR = 'audios'
 
 class AudioManager {
     private audios: Record<string, HTMLAudioElement>;
@@ -80,4 +80,8 @@ class AudioManager {
 }
 
 
-export let audioMgr = AudioManager.getInstance();
+export let audioMgr: AudioManager;
+
+export function initAudioManager() {
+    audioMgr = AudioManager.getInstance();
+}

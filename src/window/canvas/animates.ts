@@ -576,4 +576,8 @@ class CanvasAnimateManager {
 
 }
 
-export let canvasAnimate = CanvasAnimateManager.getInstance();
+export let canvasAnimate: CanvasAnimateManager;
+
+export function initCanvasAnimateManager() {
+    canvasAnimate = CanvasAnimateManager.getInstance();
+}

@@ -152,4 +152,8 @@ class ShopManager {
 
 }
 
-export let shopMgr = ShopManager.getInstance();
+export let shopMgr: ShopManager;
+
+export function initShopManager() {
+    shopMgr = ShopManager.getInstance();
+}

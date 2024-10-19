@@ -14,7 +14,7 @@ class NoteBook {
     static getInstance() {
         if (!NoteBook.instance) {
             NoteBook.instance = new NoteBook();
-        }   
+        }
         return NoteBook.instance;
     }
 
@@ -27,7 +27,7 @@ class NoteBook {
             this.notes[name] = [text];
         }
     }
-    
+
     @log
     @callertrace
     addNotes(name: string, texts: string[]) {
@@ -47,4 +47,8 @@ class NoteBook {
     }
 }
 
-export let notebook = NoteBook.getInstance();
+export let notebook: NoteBook;
+
+export function initNotebook() {
+    notebook = NoteBook.getInstance();
+}

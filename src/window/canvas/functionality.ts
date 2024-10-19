@@ -11,7 +11,7 @@ import { TextBoxResolver } from "./textBox";
 import { Block, blocksToNumberArray } from "../../floor/block";
 import { getFloorById, getMapData, loadMap } from "../../floor/data";
 import { shopMgr } from "../../shops/shops";
-import { eventManager, SLData } from "../../events/events";
+import eventMgr, { SLData } from "../../events/manager";
 import { config, staticConfig } from "../../common/config";
 import { hideDomNode } from "../../common/client";
 import { itemMgr } from "../../items/data";
@@ -688,7 +688,7 @@ export function drawBattleAnimate(enemyId: string, callback?: Function) {
     player_hp -= initDamage;
     if (player_hp <= 0) {
         player_hp = 0;
-        eventManager.handleGameover('battle');
+        eventMgr.handleGameover('battle');
         return;
     }
 

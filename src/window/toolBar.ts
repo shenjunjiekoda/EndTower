@@ -22,4 +22,8 @@ class ToolBar {
 
 }
 
-export const toolBar = ToolBar.getInstance();
+export let toolBar: ToolBar;
+
+export function initToolBar() {
+    toolBar = ToolBar.getInstance();
+}

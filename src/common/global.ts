@@ -226,5 +226,9 @@ class CoreStatus {
 
 }
 
-export let core = CoreStatus.getInstance();
+export let core: CoreStatus;
+
+export function initCoreStatus() {
+    core = CoreStatus.getInstance();
+}
 

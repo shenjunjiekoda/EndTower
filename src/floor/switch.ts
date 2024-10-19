@@ -13,7 +13,7 @@ import { canvasAnimate } from "../window/canvas/animates";
 import { canvas } from "../window/canvas/canvas";
 import { audioMgr } from "../resource/audios";
 import { PlayerLocation, playerMgr } from "../player/data";
-import { eventManager } from "../events/events";
+import eventMgr from "../events/manager";
 
 export enum StairDirection {
     UPFLOOR = 1,
@@ -55,7 +55,7 @@ function handlePostSwitchFloorEvent(destFloorId: number) {
         let dstFloor = getFloorById(destFloorId);
         if (isset(dstFloor?.firstArriveEvents)) {
             console.log("first arrive events: ", dstFloor!.firstArriveEvents);
-            eventManager.handle(dstFloor!.firstArriveEvents!);
+            eventMgr.handle(dstFloor!.firstArriveEvents!);
         }
         core.setFlag(flag, true);
     }

@@ -7,7 +7,7 @@ import { canMovePlayer, drawPlayer, movePlayer, pointNoPassExists } from "../win
 import { canMoveDirectly } from "../floor/data";
 import { route } from "./route";
 import { itemMgr } from "../items/data";
-import { eventManager } from "../events/events";
+import eventMgr from "../events/manager";
 import { getBlockAtPointOnFloor } from "../floor/block";
 import { config } from "../common/config";
 import { blockingCtx } from "../window/canvas/damage";
@@ -278,7 +278,7 @@ class AutoRoute {
         if (destX == playerMgr.getPlayerLocX() && destY == playerMgr.getPlayerLocY() && postRoute.length == 0) {
             if (!isset(this.turnPlayerTimeout)) {
                 this.turnPlayerTimeout = setTimeout(() => {
-                    eventManager.handleTurnPlayer();
+                    eventMgr.handleTurnPlayer();
                     clearTimeout(this.turnPlayerTimeout!);
                     this.turnPlayerTimeout = null;
                 }, 250);
@@ -481,4 +481,8 @@ class AutoRoute {
     }
 }
 
-export const autoRoute = AutoRoute.getInstance();
+export let autoRoute: AutoRoute;
+
+export function initAutoRoute() {
+    autoRoute = AutoRoute.getInstance();
+}

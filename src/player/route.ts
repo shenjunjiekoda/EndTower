@@ -7,7 +7,7 @@ class Route {
         if (Route.instance) {
             throw new Error("Error: Instantiation failed: Use Route.getInstance() instead of new.");
         }
-        Route.instance = this;  
+        Route.instance = this;
     }
 
     static getInstance(): Route {
@@ -34,5 +34,9 @@ class Route {
     }
 }
 
-export let route = Route.getInstance();
+export let route: Route;
+
+export function initRoute() {
+    route = Route.getInstance();
+}
 

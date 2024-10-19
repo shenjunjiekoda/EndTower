@@ -43,23 +43,23 @@ export interface SLData {
 
 export type TriggerEventHandler = (block: Block, callback?: Function) => void;
 
-class EventManager {
-    static Instance: EventManager;
+class EventsManager {
+    static Instance: EventsManager;
     private openDoorInterval: NodeJS.Timeout | null = null;
     private triggerEvents: Record<string, TriggerEventHandler> = {};
 
     private constructor() {
-        if (EventManager.Instance) {
-            throw new Error("Error: Instantiation failed: Use EventManager.Instance instead of new.");
+        if (EventsManager.Instance) {
+            throw new Error("Error: Instantiation failed: Use EventsManager.Instance instead of new.");
         }
-        EventManager.Instance = this;
+        EventsManager.Instance = this;
     }
 
-    static getInstance(): EventManager {
-        if (!EventManager.Instance) {
-            EventManager.Instance = new EventManager();
+    static getInstance(): EventsManager {
+        if (!EventsManager.Instance) {
+            EventsManager.Instance = new EventsManager();
         }
-        return EventManager.Instance;
+        return EventsManager.Instance;
     }
 
 
@@ -239,7 +239,7 @@ class EventManager {
                     y = data.loc[1] as number;
                 }
                 canvasAnimate.moveBlockAnimate(x!, y!, data.steps, data.time, data.immediateHide,
-                    eventManager.handleAction);
+                    eventMgr.handleAction);
                 break;
             case 'show':
                 console.log('show action data:', data);
@@ -250,12 +250,12 @@ class EventManager {
                     data.loc.forEach((loc: number[]) => {
                         canvasAnimate.showBlockAnimate(loc[0], loc[1], data.floorId);
                     });
-                    eventManager.handleAction();
+                    eventMgr.handleAction();
                 } else {
                     data.loc.forEach((loc: number[]) => {
                         canvasAnimate.showBlockAnimate(loc[0], loc[1], data.floorId);
                     });
-                    eventManager.handleAction();
+                    eventMgr.handleAction();
                 }
                 break;
             case 'hide':
@@ -278,7 +278,7 @@ class EventManager {
                 break;
             case 'setValue':
                 console.log('setValue data:', data);
-                const value = eventManager.evalValue(data.value);
+                const value = eventMgr.evalValue(data.value);
                 console.log('setValue:', value);
 
                 if ((data.name as string).startsWith("status:")) {
@@ -308,12 +308,12 @@ class EventManager {
                 break;
             case 'if':
                 console.log('if data:', data);
-                const condition = eventManager.evalValue(data.condition) as boolean;
+                const condition = eventMgr.evalValue(data.condition) as boolean;
                 console.log('condition:', condition);
                 if (condition) {
-                    eventManager.doOrInsertAction(data.true);
+                    eventMgr.doOrInsertAction(data.true);
                 } else {
-                    eventManager.doOrInsertAction(data.false);
+                    eventMgr.doOrInsertAction(data.false);
                 }
                 this.handleAction();
                 break;
@@ -375,7 +375,7 @@ class EventManager {
                 let openDoorBlock = getBlockAtPointOnFloor(data.loc[0], data.loc[1], floorId);
                 if (isset(openDoorBlock)) {
                     if (floorId == getFloorById())
-                        eventManager.handleOpenDoor(openDoorBlock!.block.event!.id, openDoorBlock!.block.x, openDoorBlock!.block.y, false, () => {
+                        eventMgr.handleOpenDoor(openDoorBlock!.block.event!.id, openDoorBlock!.block.x, openDoorBlock!.block.y, false, () => {
                             this.handleAction();
                         })
                     else {
@@ -456,6 +456,12 @@ class EventManager {
 
     handleGetItem(itemId: string, itemNum: number, x: number, y: number, callback?: Function) {
         audioMgr.play('item.ogg');
+        if (!itemMgr.existItem(itemId)) {
+            if (isset(callback)) {
+                callback!();
+            }
+            return;
+        }
         const item = itemMgr.getItemByID(itemId);
 
         itemMgr.useItemEffectDirectly(itemId, itemNum);
@@ -1383,7 +1389,7 @@ class EventManager {
                     playerMgr.setupPlayerDataByGameLevel(gameLevel)
                     playerMgr.setPlayerName(playerName);
                     playerMgr.setPlayerIsMan(getLocalStorage('isMan', true));
-                    eventManager.handleResetData(playerMgr.getPlayerData(), gameLevel, staticConfig.initFloorId);
+                    eventMgr.handleResetData(playerMgr.getPlayerData(), gameLevel, staticConfig.initFloorId);
                     canvas.drawText(staticConfig.startText, onDrawTextComplete);
                 });
             };
@@ -1405,4 +1411,10 @@ class EventManager {
     }
 }
 
-export const eventManager = EventManager.getInstance();
+let eventMgr: EventsManager = EventsManager.getInstance();
+
+export function initEventsManager() {
+    eventMgr = EventsManager.getInstance();
+}
+
+export default eventMgr;
