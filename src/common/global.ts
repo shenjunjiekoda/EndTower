@@ -97,7 +97,7 @@ class CoreStatus {
     }
 
     hasEventData(key: string) {
-        return key in this.event.data;
+        return key in this.event.data && isset(this.event.data[key]);
     }
 
     getEventData(key: string) {

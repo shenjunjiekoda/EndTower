@@ -174,6 +174,8 @@ class GameCanvas {
         this.internal.stroke();
     }
 
+    @log
+    @callertrace
     strokeRect(x: number, y: number, width: number, height: number, style?: string, lineWidth?: number) {
         if (isset(style)) {
             this.setStrokeStyle(style!);
@@ -664,7 +666,7 @@ class CanvasManager {
             const c = choices[selection];
             let text = isset(c.text) ? c.text : c;
             const len = ui.measureTextWidth(eventMgr.resolveText(text));
-            ui.strokeRect(INIT_CANVAS_WIDTH - len / 2 - 5, choice_top + BLOCK_WIDTH * selection - 20, len + 10, 28, GOLD, 2);
+            ui.strokeRect(INIT_CANVAS_WIDTH / 2 - len / 2 - 5, choice_top + BLOCK_WIDTH * selection - 20, len + 10, 28, GOLD, 2);
         }
     }
 

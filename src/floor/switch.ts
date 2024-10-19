@@ -162,6 +162,10 @@ export function switchFloor(destFloorId: number, stairDirection?: StairDirection
             canvas.drawMap(destFloorId, () => setTimeout(onDrawMapComplete, DEFAULT_TIMEOUT_MILLS));
         };
 
+        if (!audioMgr.isAnyPlaying()) {
+            audioMgr.playBgm();
+        }
+
         audioMgr.play('switch_floor.mp3');
         canvasAnimate.showDomAsAnimate('floorSwitchTipBox', frameTime / 2, switchImpl);
     }, DEFAULT_TIMEOUT_MILLS);

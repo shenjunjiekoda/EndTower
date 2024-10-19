@@ -30,6 +30,9 @@ class ImageManager {
     }
 
     getPlayer() {
+        if (!('player' in this.images)) {
+            this.setPlayerImage();
+        }
         return this.images['player'];
     }
 

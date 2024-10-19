@@ -31,6 +31,12 @@ class AudioManager {
         this.get(audioName).play();
     }
 
+    playBgm() {
+        // 1-3 随机的一个整数
+        let randomNum = Math.floor(Math.random() * 3) + 1;
+        this.play(`bgm${randomNum}.mp3`);
+    }
+
     pause(audioName: string) {
         this.get(audioName).pause();
     }
@@ -45,6 +51,10 @@ class AudioManager {
             audio.pause();
             audio.currentTime = 0;
         });
+    }
+
+    isAnyPlaying() {
+        return Object.values(this.audios).some((audio) => !audio.paused);
     }
 
     @log

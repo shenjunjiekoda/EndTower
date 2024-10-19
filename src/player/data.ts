@@ -146,9 +146,16 @@ class PlayerManager {
     getPlayerProperty(propertyName: string) {
         return this.player_data[propertyName as keyof PlayerData];
     }
+    
     setPlayerProperty(propertyName: string, value: any) {
         if (isset(this.player_data[propertyName as keyof PlayerData])) {
             (this.player_data as any)[propertyName] = value;
+        }
+    }
+
+    addPlayerProperty(propertyName: string, value: any) {
+        if (isset(this.player_data[propertyName as keyof PlayerData])) {
+            (this.player_data as any)[propertyName] += value;
         }
     }
 

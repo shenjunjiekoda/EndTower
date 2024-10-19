@@ -211,7 +211,6 @@ export function drawThumbnail(floorId: number, canvasId: string, blocks: Block[]
     const floor = getFloorById(floorId)!;
     let groundId = isset(floor.defaultGround) ? floor.defaultGround : "ground";
     let blockImage = imageMgr.getGround(groundId);
-
     let persize = size / CANVAS_BLOCK_WIDTH_CNT;
     for (let i = 0; i < CANVAS_BLOCK_WIDTH_CNT; i++) {
         for (let j = 0; j < CANVAS_BLOCK_WIDTH_CNT; j++) {

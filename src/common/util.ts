@@ -224,9 +224,9 @@ export function callertrace(target: any, propertyKey: string, descriptor: Proper
     descriptor.value = function (...args: any[]) {
         try {
             const stack = new Error().stack;
-            const caller = stack?.split('\n')[2]?.trim() || 'Unknown';
+            const stackTrace = stack?.split('\n').slice(1).map(line => line.trim()).join('\n') || 'Unknown';
 
-            console.log(`Method ${propertyKey} was called by:`, caller);
+            console.log(`Method ${propertyKey} was called. Call stack:\n${stackTrace}`);
 
             return originalMethod.apply(this, args);
         } catch (err) {

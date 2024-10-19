@@ -524,7 +524,7 @@ class EventsManager {
         console.log('load game: ', saveIndex, page, offset);
 
         // 游戏开始前读档
-        if (!core.isStarted) {
+        if (!core.isStarted()) {
             console.log('load game before start');
             core.setEventId('load');
 

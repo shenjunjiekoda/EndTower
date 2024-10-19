@@ -472,7 +472,7 @@ class InteractManager {
         let value = eventMgr.evalValue(arr[1]);
         if (name.startsWith("status:")) {
             let status = name.substring(7);
-            playerMgr.setPlayerProperty(status, value);
+            playerMgr.addPlayerProperty(status, value);
         }
         else if (name.startsWith("item:")) {
             let itemId = name.substring(5);
@@ -481,7 +481,7 @@ class InteractManager {
     }
 
     clickShop(x: number, y: number) {
-        console.log('click shop', x, y);
+        console.log('click shop', x, y, core.getEvent());
         let shop = core.getEventData('shop');
         console.log('shop', shop);
         let choices = shop.choices;
@@ -924,7 +924,7 @@ class InteractManager {
     }
 
     onKeyUp(event: KeyboardEvent) {
-        console.log('on key up', event);
+        console.log('on key up', core.getEvent());
         console.log('on key up locked', core.isLocked());
         console.log('coreStatus.holdingKeys', this.holdingKeys);
         const keyCode = event.keyCode;
@@ -1444,8 +1444,8 @@ class InteractManager {
             }
             return;
         }
-        if ([13, BLOCK_WIDTH, 67].includes(keyCode)) {
-            // 13: enter, BLOCK_WIDTH: space, 67: c
+        if ([13, 32, 67].includes(keyCode)) {
+            // 13: enter, 32: space, 67: c
             if (offset == 0) {
                 eventMgr.doSL("autoSave", core.getEventId()!);
             }

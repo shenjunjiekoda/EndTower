@@ -10,4 +10,5 @@ This project is written in Typescript.
 npm install
 npm run start
 ```
+
 Then open your browser and visit `http://localhost:8133`.
