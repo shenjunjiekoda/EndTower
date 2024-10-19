@@ -45,7 +45,7 @@ export function stopPlayer(callback?: Function) {
     }
 }
 
-export function pointNoPassExists(x: number, y: number, floorId?: number): boolean {
+export function pointNoPassExists(x: number, y: number, floorId: number = playerMgr.getFloorId()): boolean {
     const block = getBlockAtPointOnFloor(x, y, floorId);
     return isset(block) && isset(block!.block!.event!.noPass) && block!.block!.event!.noPass!;
 }
@@ -190,11 +190,15 @@ export function moveAction(callback?: Function) {
         const afterMove = () => {
             const playerLoc = playerMgr.getPlayerLoc();
             if (autoRoute.isMoveEnabled()) {
-
                 autoRoute.incDirectionMovedSteps();
                 autoRoute.setLastDirection(playerLoc.direction);
+                
+                console.log('auto route inc moved steps to', autoRoute.getDirectionMovedSteps());
+                console.log('set last direction to', playerLoc.direction);
+                console.log('dest steps:', autoRoute.getDirectionDestSteps(), ' moved steps:', autoRoute.getDirectionMovedSteps());
 
                 if (autoRoute.getDirectionDestSteps() == autoRoute.getDirectionMovedSteps()) {
+                    console.log('route length:', autoRoute.getRoutesLength(), ' idx:', autoRoute.getIdx());
                     if (autoRoute.getIdx() == autoRoute.getRoutesLength()) {
                         autoRoute.clearRemainingRoutes();
                         autoRoute.stop();
@@ -204,12 +208,17 @@ export function moveAction(callback?: Function) {
                         autoRoute.setDirectionDestSteps(autoRoute.getRoutes()[autoRoute.getIdx()].steps);
                         playerMgr.setPlayerLocDirection(autoRoute.getRoutes()[autoRoute.getIdx()].direction);
                         autoRoute.incIdx();
+
+                        console.log('auto route set move steps to 0, set dest steps to', autoRoute.getDirectionDestSteps(), 'inc idx to', autoRoute.getIdx());
                     }
                 }
             }
             else if (!playerMgr.isPlayerMoving()) {
                 drawPlayer(playerLoc.direction, playerLoc.x, playerLoc.y);
             }
+
+            route.push(direction);
+            console.log('push direction to route:', direction);
 
             eventMgr.handleTriggerPointEvent(playerMgr.getPlayerLocX(), playerMgr.getPlayerLocY());
             eventMgr.checkAndHandleBlockEvent();
@@ -219,6 +228,7 @@ export function moveAction(callback?: Function) {
         };
         setPlayerMoveInterval(direction, x, y, afterMove);
     }
+
 }
 
 // 移动角色 | move player

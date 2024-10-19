@@ -1,6 +1,6 @@
 import { core } from "../common/global";
 import { player, ui } from "../window/canvas/canvas";
-import { isset, toInt } from "../common/util";
+import { isset, log, toInt } from "../common/util";
 import { BLOCK_WIDTH, CANVAS_BLOCK_WIDTH_CNT, DIRECTION_TO_POINT_MAP, LIGHT_GREEN } from "../common/constants";
 import { PlayerLocation, playerMgr } from "./data";
 import { canMovePlayer, drawPlayer, movePlayer, pointNoPassExists } from "../window/canvas/player";
@@ -155,6 +155,7 @@ class AutoRoute {
         return this.routePostEvent.length;
     }
 
+    @log
     pushRoutePostEvent(x: number, y: number) {
         this.routePostEvent.push({ x, y });
     }
@@ -199,7 +200,7 @@ class AutoRoute {
 
         this.routes = routes;
         this.moveEnabled = true;
-        this.directionMovedSteps = 1;
+        this.idx = 1;
         this.directionDestSteps = routes[0].steps;
         movePlayer(routes[0].direction);
     }
@@ -387,10 +388,12 @@ class AutoRoute {
     findAutoRoute(destX: number, destY: number): PlayerLocation[] | undefined {
         let startX = playerMgr.getPlayerLocX();
         let startY = playerMgr.getPlayerLocY();
+
         let queue: number[] = [];
-        let nowDeep = 0;
+
+        let cur = 0;
         let route = [];
-        let ans: PlayerLocation[] = []
+        let res: PlayerLocation[] = []
 
         if (destX == startX && destY == startY)
             return undefined;
@@ -400,13 +403,25 @@ class AutoRoute {
         route[CANVAS_BLOCK_WIDTH_CNT * startX + startY] = '';
 
         while (queue.length != 1) {
-            let f = queue.shift()!;
-            if (f === -1) { nowDeep += 1; queue.push(-1); continue; }
-            let deep = ~~(f / (CANVAS_BLOCK_WIDTH_CNT * CANVAS_BLOCK_WIDTH_CNT));
-            if (deep !== nowDeep) { queue.push(f); continue; }
-            f = f % (CANVAS_BLOCK_WIDTH_CNT * CANVAS_BLOCK_WIDTH_CNT);
-            let nowX = toInt(f / CANVAS_BLOCK_WIDTH_CNT), nowY = f % CANVAS_BLOCK_WIDTH_CNT;
-            for (let direction in DIRECTION_TO_POINT_MAP) {
+            let t = queue.shift()!;
+            if (t === -1) {
+                cur += 1;
+                queue.push(-1);
+                continue;
+            }
+
+            let deep = ~~(t / (CANVAS_BLOCK_WIDTH_CNT * CANVAS_BLOCK_WIDTH_CNT));
+            if (deep !== cur) {
+                queue.push(t);
+                continue;
+            }
+
+            t %= (CANVAS_BLOCK_WIDTH_CNT * CANVAS_BLOCK_WIDTH_CNT);
+
+            let nowX = toInt(t / CANVAS_BLOCK_WIDTH_CNT);
+            let nowY = t % CANVAS_BLOCK_WIDTH_CNT;
+
+            for (const direction in DIRECTION_TO_POINT_MAP) {
                 if (!canMovePlayer(nowX, nowY, direction))
                     continue;
 
@@ -426,18 +441,16 @@ class AutoRoute {
                 let nextId, nextBlock = getBlockAtPointOnFloor(nx, ny);
                 if (isset(nextBlock)) {
                     nextId = nextBlock!.block.event!.id;
-                    // 绕过亮灯（因为只有一次通行机会很宝贵）
-                    if (nextId == "light") deepAdd = 100;
-                    // 绕过路障
-                    if (nextId.substring(nextId.length - 3) == "Net") {
+                    if (nextId == "light")
+                        deepAdd = 100;
+                    if (nextId.endsWith("Net")) {
                         deepAdd = config.lavaDamage;
                     }
-                    // 绕过血瓶
-                    if (nextId.substring(nextId.length - 6) == "Potion") {
+                    if (nextId.endsWith("Potion")) {
                         deepAdd = 20;
                     }
-                    // 绕过传送点
-                    if (nextBlock!.block.event?.trigger == 'changeFloor') deepAdd = 10;
+                    if (nextBlock!.block.event?.trigger == 'switchFloor')
+                        deepAdd = 10;
                 }
                 if (blockingCtx.damage[nid] > 0)
                     deepAdd = blockingCtx.damage[nid];
@@ -450,7 +463,7 @@ class AutoRoute {
                     continue;
 
                 route[nid] = direction;
-                queue.push(CANVAS_BLOCK_WIDTH_CNT * CANVAS_BLOCK_WIDTH_CNT * (nowDeep + deepAdd) + nid);
+                queue.push(CANVAS_BLOCK_WIDTH_CNT * CANVAS_BLOCK_WIDTH_CNT * (cur + deepAdd) + nid);
             }
             if (isset(route[CANVAS_BLOCK_WIDTH_CNT * destX + destY])) break;
         }
@@ -462,13 +475,14 @@ class AutoRoute {
         let nowX = destX, nowY = destY;
         while (nowX != startX || nowY != startY) {
             let dir = route[CANVAS_BLOCK_WIDTH_CNT * nowX + nowY];
-            ans.push({ 'direction': dir, 'x': nowX, 'y': nowY });
+            res.push({ 'direction': dir, 'x': nowX, 'y': nowY });
             nowX -= DIRECTION_TO_POINT_MAP[dir].x;
             nowY -= DIRECTION_TO_POINT_MAP[dir].y;
         }
 
-        ans.reverse();
-        return ans;
+        res.reverse();
+        console.log("findAutoRoute", res);
+        return res;
     }
 
 
