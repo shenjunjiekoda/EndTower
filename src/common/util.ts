@@ -45,6 +45,9 @@ export function toInt(value: number | string): number {
  */
 
 export function clone<T>(obj: T): T {
+    if (!isset(obj)) {
+        return obj;
+    }
     return JSON.parse(JSON.stringify(obj));
 }
 // export function clone<T>(obj: T): T {

@@ -755,29 +755,6 @@ class EventsManager {
     }
 
 
-    handleSaveData(dataId: string) {
-        let data: SLData = {
-            'floorId': playerMgr.getFloorId(),
-            'playerData': clone(playerMgr.getPlayerData()),
-            'level': core.getGameLevel(),
-            'maps': saveMaps(),
-            'flags': core.getFlags(),
-            'route': this.encodeRoute(route.intern()),
-            'shops': {},
-            'notes': notebook.getNotes(),
-            'version': staticConfig.gameVersion,
-            "time": new Date().getTime()
-        };
-        // set shop times
-        let shopIds = Object.keys(shopMgr.getShopVisited());
-        for (let i = 0; i < shopIds.length; i++) {
-            let shopId = shopIds[i];
-            data.shops[shopId] = clone(shopMgr.getShopById(shopId));
-        }
-
-        console.log('saveData: ', data);
-        return setLocalStorage(dataId, data);
-    }
 
 
     decodeRoute(route?: string): string[] {
@@ -939,6 +916,31 @@ class EventsManager {
         }
     }
 
+
+    handleSaveData(dataId: string) {
+        let data: SLData = {
+            'floorId': playerMgr.getFloorId(),
+            'playerData': clone(playerMgr.getPlayerData()),
+            'level': core.getGameLevel(),
+            'maps': saveMaps(),
+            'flags': core.getFlags(),
+            'route': this.encodeRoute(route.intern()),
+            'shops': {},
+            'notes': notebook.getNotes(),
+            'version': staticConfig.gameVersion,
+            "time": new Date().getTime()
+        };
+        // set shop times
+        let shopIds = shopMgr.getShopIds();
+        for (let i = 0; i < shopIds.length; i++) {
+            let shopId = shopIds[i];
+            data.shops[shopId] = clone(shopMgr.getShopById(shopId));
+        }
+
+        console.log('saveData: ', data);
+        return setLocalStorage(dataId, data);
+    }
+
     handleLoadData(data: SLData, callback?: Function) {
         console.log('loadData: ', data, callback);
 
@@ -953,7 +955,10 @@ class EventsManager {
             if (shop.times > 0) {
                 shopMgr.setShopVisited(shopId);
                 console.log('load shop visited: ', shopId);
+            } else {
+                shopMgr.setShopVisited(shopId, false);
             }
+            console.log('load shop: ', shopId, shop);
             shopMgr.setShopById(shopId, clone(shop));
         }
 

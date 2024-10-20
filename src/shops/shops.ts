@@ -142,8 +142,8 @@ class ShopManager {
         return shopId in this.shopVisited && this.shopVisited[shopId];
     }
 
-    setShopVisited(shopId: string) {
-        this.shopVisited[shopId] = true;
+    setShopVisited(shopId: string, visited: boolean = true) {
+        this.shopVisited[shopId] = visited;
     }
 
     getShopVisited() {
