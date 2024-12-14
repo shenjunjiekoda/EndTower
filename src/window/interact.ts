@@ -8,7 +8,7 @@ import { callertrace, isset, log, setLocalStorage, toInt } from "../common/util"
 import { PlayerLocation, playerMgr } from "../player/data";
 import eventMgr from "../events/manager";
 import { canvasAnimate } from "./canvas/animates";
-import { drawAbout, drawBookDetail, drawCursor, drawEncyclopedia, drawHelp, drawOpenEncyclopedia, drawQuickShop, drawSettings, drawSLPanel, drawSwitchs, drawToolbox, drawTransport } from "./canvas/functionality";
+import { drawAbout, drawEncyclopediaDetail, drawCursor, drawEncyclopedia, drawHelp, drawOpenEncyclopedia, drawQuickShop, drawSettings, drawSLPanel, drawSwitchs, drawToolbox, drawTransport } from "./canvas/functionality";
 import { movePlayer } from "./canvas/player";
 import { route } from "../player/route";
 import { itemMgr } from "../items/data";
@@ -270,7 +270,7 @@ class InteractManager {
             let page = toInt(index / 6);
             let idx = 6 * page + toInt(y / 2);
             drawEncyclopedia(idx);
-            drawBookDetail(idx);
+            drawEncyclopediaDetail(idx);
         }
         return;
     }
@@ -304,7 +304,7 @@ class InteractManager {
                 case 'encyclopedia':
                     this.keyDownEncyclopedia(keyCode);
                     return;
-                case 'transport':
+                case 'transporter':
                     this.keyDownTransport(keyCode);
                     return;
                 case 'viewMaps':
@@ -797,7 +797,7 @@ class InteractManager {
                 return;
             }
 
-            if (eventId == 'transport') {
+            if (eventId == 'transporter') {
                 this.keyUpTransport(keyCode);
                 return;
             }
@@ -1010,7 +1010,7 @@ class InteractManager {
             case 'encyclopedia-detail':
                 this.clickEncyclopediaDetail();
                 return;
-            case 'transport':
+            case 'transporter':
                 this.clickTransport(x, y);
                 return;
             case 'viewMaps':

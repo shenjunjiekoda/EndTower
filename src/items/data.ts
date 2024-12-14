@@ -407,7 +407,7 @@ class ItemManager {
         const blocks = getMapData().blocks;
         for (let i = 0; i < blocks!.length!; i++) {
             let block = blocks[i];
-            if (isset(block.event) && !(isset(block.enable) && !(block.enable!)) && block.event?.type == 'enemys' && Math.abs(block.x - playerMgr.getPlayerLocX()) + Math.abs(block.y - playerMgr.getPlayerLocY()) <= 1) {
+            if (isset(block.event) && !(isset(block.enable) && !(block.enable!)) && block.event?.type == 'enemies' && Math.abs(block.x - playerMgr.getPlayerLocX()) + Math.abs(block.y - playerMgr.getPlayerLocY()) <= 1) {
                 let enemy = enemiesMgr.getEnemyByID(block.event!.id!);
                 if (isset(enemy.bomb) && !(enemy.bomb!))
                     continue;
@@ -426,7 +426,7 @@ class ItemManager {
         const blocks = getMapData().blocks;
         for (let i = 0; i < blocks.length!; i++) {
             let block = blocks[i];
-            if (isset(block.event) && !(isset(block.enable) && !(block.enable!)) && block.event?.type == 'enemys' && block.x == playerMgr.getNextX() && block.y == playerMgr.getNextY()) {
+            if (isset(block.event) && !(isset(block.enable) && !(block.enable!)) && block.event?.type == 'enemies' && block.x == playerMgr.getNextX() && block.y == playerMgr.getNextY()) {
                 let enemy = enemiesMgr.getEnemyByID(block.event!.id!);
                 if (isset(enemy.bomb) && !(enemy.bomb!))
                     continue;
@@ -543,7 +543,7 @@ class ItemManager {
         switch (itemId) {
             case 'encyclopedia':
                 return true;
-            case 'fly':
+            case 'transporter':
                 return playerMgr.getPlayerTransportEnabledRange().includes(playerMgr.getFloorId());
             case 'pickaxe':
                 return this.canUsePickaxe();
@@ -595,7 +595,7 @@ class ItemManager {
             drawOpenEncyclopedia(false);
             return;
         }
-        if (itemId == 'fly') {
+        if (itemId == 'transporter') {
             eventMgr.handleUseToolBarTransporter(false);
             return;
         }
@@ -704,7 +704,7 @@ class ItemManager {
         }
 
         statusBar.syncPlayerStatus();
-        if (itemId != 'encyclopedia' && itemId != 'fly') {
+        if (itemId != 'encyclopedia' && itemId != 'transporter') {
             route.push("item:" + itemId);
         }
         if (itemtype == 'tools') {

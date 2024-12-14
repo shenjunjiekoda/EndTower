@@ -4,6 +4,8 @@ End Tower is a 2D game, whose prototype is `magic tower 23 floors`(“魔塔23�
 
 This project is written in Typescript.
 
+> Note: The game has a high difficulty level.
+
 ## How to play
 
 ```shell
@@ -15,3 +17,7 @@ Then open your browser and visit `http://localhost:8133`.
 
 
 It can be played on both PC and mobile devices(lock portrait orientation is best).
+
+## Game screenshot
+
+![screenshot1](pic1.png)

@@ -60,6 +60,7 @@ export function updateDamageDisplay() {
         console.log('no Encyclopedia');
         return;
     }
+    console.log('has Encyclopedia');
 
     damage.setFont(DAMAGE_DISPLAY_FONT);
 
@@ -71,7 +72,7 @@ export function updateDamageDisplay() {
         for (let i = 0; i < mapBlocks.length; i++) {
             const block = mapBlocks[i]
             let x = block.x, y = block.y;
-            if (isset(block.event) && block.event?.type == 'enemys'
+            if (isset(block.event) && block.event?.type == 'enemies'
                 && !(isset(block.enable) && !block.enable)) {
 
                 // 非系统默认的战斗事件（被覆盖）
@@ -103,8 +104,7 @@ export function updateDamageDisplay() {
                 else
                     color = RED;
 
-                let damageStr: string = damage.toString();
-
+                let damageStr: string = num.toString();
                 if (num >= MAX)
                     damageStr = "???";
                 else if (num > 100000)

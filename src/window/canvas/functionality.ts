@@ -139,7 +139,7 @@ export function drawEncyclopedia(index: number) {
 }
 
 // 绘制怪物属性的详细信息
-export function drawBookDetail(index: number) {
+export function drawEncyclopediaDetail(index: number) {
     let enemys = enemiesMgr.getCurrentEnemys(core.getEventDataSelection());
     if (enemys.length == 0) {
         return;

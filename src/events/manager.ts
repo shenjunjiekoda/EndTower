@@ -323,7 +323,7 @@ class EventsManager {
                 // if (isset(data.direction))  {
                 //     playerLoc.direction=data.direction;
                 // }
-                switchFloor(data.floorId || getFloorById(), undefined, playerLoc, data.time, () => {
+                switchFloor(data.floorId || playerMgr.getFloorId(), undefined, playerLoc, data.time, () => {
                     core.lock();
                     this.handleAction();
                 });
@@ -368,13 +368,13 @@ class EventsManager {
                     this.handleAction();
                 })
             case 'openDoor':
-                let floorId = data.floorId || getFloorById();
+                let floorId = data.floorId || playerMgr.getFloorId();
                 if (!isset(data?.loc)) {
                     return;
                 }
                 let openDoorBlock = getBlockAtPointOnFloor(data.loc[0], data.loc[1], floorId);
                 if (isset(openDoorBlock)) {
-                    if (floorId == getFloorById())
+                    if (floorId == playerMgr.getFloorId())
                         eventMgr.handleOpenDoor(openDoorBlock!.block.event!.id, openDoorBlock!.block.x, openDoorBlock!.block.y, false, () => {
                             this.handleAction();
                         })
@@ -397,7 +397,10 @@ class EventsManager {
                         y = data.loc[1];
                     }
                 }
-                canvasAnimate.draw(data.name, x!, y!, this.handleAction);
+                const afterDraw = () => {
+                    this.handleAction();
+                };
+                canvasAnimate.draw(data.name, x!, y!, afterDraw);
                 break;
             case 'choices':
                 canvas.drawChoices(data.text, data.choices);
@@ -549,11 +552,14 @@ class EventsManager {
             let contents = ["你赢了！"];
             if (IsTrueEnd) {
                 contents.push("真结局");
+                contents.push("你的等级到达了:" + playerMgr.getPlayerLevel());
+                contents.push("非常出色的通关!");
+                contents.push("您的游戏评分为: " + playerMgr.getGameScore());
             }
             if (reason) {
                 contents.push(reason);
             }
-            canvas.drawText();
+            canvas.drawText(contents);
         };
         stopPlayer(onStop);
 
@@ -1138,7 +1144,7 @@ class EventsManager {
                 removeBlock(t.x, t.y);
                 let nBlock: Block = clone(t.block!);
                 nBlock.x = t.nx!; nBlock.y = t.ny!;
-                getMapData().blocks.push(nBlock);
+                pushBlockToFloor(playerMgr.getFloorId(), nBlock);
                 canvasAnimate.pushMapsAnimateObj(2, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, t.blockImages!, t.blockIcon);
                 event.drawImage(t.blockImages![0], 0, t.blockIcon! * BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH, BLOCK_WIDTH * t.nx!, BLOCK_WIDTH * t.ny!, BLOCK_WIDTH, BLOCK_WIDTH);
             });

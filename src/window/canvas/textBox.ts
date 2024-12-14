@@ -77,8 +77,10 @@ export class TextBoxResolver {
                     if (this.id !== 'player') {
                         if (enemiesMgr.hasEnemyId(this.id)) {
                             const enemy = enemiesMgr.getEnemyByID(this.id);
+                            console.log('enemy: ', enemy);
                             this.name = enemy!.name;
-                            this.images = imageMgr.getEnemyImages(this.name!);
+                            console.log('enemy name:', this.name);
+                            this.images = imageMgr.getEnemyImages(this.id!);
                         } else {
                             this.name = this.id;
                             this.id = 'npc';
@@ -255,7 +257,7 @@ export class TextBoxResolver {
             } else {
                 // 如果是其他角色，绘制角色名称和头像
                 ui.fillText(this.name!, content_left, top! + 30, undefined, NPC_TEXTBOX_FONT);
-                if (isset(this.images)) {
+                if (isset(this.images) && this.images!.length > 0) {
                     ui.strokeRect(left + 15 - 1, top! + 40 - 1, 34, 34, undefined, 2);
                     canvasAnimate.resetRegionAnimate();
                     console.log('textboxresolver box images', this.images);

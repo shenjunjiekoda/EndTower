@@ -337,7 +337,7 @@ class EnemiesManager {
         let mapBlocks = getMapData(floorId).blocks;
         for (let i = 0; i < mapBlocks.length; i++) {
             const block = mapBlocks[i];
-            if (isset(block.event) && !(isset(block.enable) && !(block.enable!)) && block.event?.type == 'enemys') {
+            if (isset(block.event) && !(isset(block.enable) && !(block.enable!)) && block.event?.type == 'enemies') {
                 let enemyId = block.event.id!;
                 if (enemyId in used)
                     continue;

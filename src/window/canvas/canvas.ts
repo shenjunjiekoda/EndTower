@@ -655,13 +655,16 @@ class CanvasManager {
             ui.fillText(eventMgr.resolveText(text), INIT_CANVAS_WIDTH / 2, choice_top + BLOCK_WIDTH * i, WHITE, CHOICEBOX_FONT);
         }
 
+        console.log('choices', choices);
         if (choices.length > 0) {
             if (!core.hasEventDataSelection() || core.getEventDataSelection() < 0) {
                 core.setEventDataSelection(0);
             }
-            const selection = core.getEventDataSelection();
+            let selection = core.getEventDataSelection();
+            console.log('selection', selection);
             if (selection! >= choices.length) {
                 core.setEventDataSelection(choices.length - 1);
+                selection = choices.length - 1;
             }
             const c = choices[selection];
             let text = isset(c.text) ? c.text : c;

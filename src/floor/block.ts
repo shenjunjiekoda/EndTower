@@ -63,7 +63,7 @@ const init_block_events: { [key: number]: BlockEvent } = {
     18: { type: 'wall', id: 'brownwall' },
     19: { type: 'wall', id: 'redwall' },
     20: { type: 'wall', id: 'pinkwall' },
-    69: { type: 'greenwall', id: 'greenwall' },
+    69: { type: 'wall', id: 'greenwall' },
 
     21: { type: 'items', id: 'yellowKey' }, // 黄钥匙
     22: { type: 'items', id: 'blueKey' }, // 蓝钥匙
@@ -90,7 +90,7 @@ const init_block_events: { [key: number]: BlockEvent } = {
     43: { type: 'items', id: 'sword5' }, // 神圣剑
     44: { type: 'items', id: 'shield5' }, // 神圣盾
     45: { type: 'items', id: 'encyclopedia' }, // 怪物手册
-    46: { type: 'items', id: 'fly' }, // 楼层传送器
+    46: { type: 'items', id: 'transporter' }, // 楼层传送器
     47: { type: 'items', id: 'pickaxe' }, // 破墙镐
     48: { type: 'items', id: 'icePickaxe' }, // 破冰镐
     49: { type: 'items', id: 'bomb' }, // 炸弹

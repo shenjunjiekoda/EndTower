@@ -146,7 +146,7 @@ class PlayerManager {
     getPlayerProperty(propertyName: string) {
         return this.player_data[propertyName as keyof PlayerData];
     }
-    
+
     setPlayerProperty(propertyName: string, value: any) {
         if (isset(this.player_data[propertyName as keyof PlayerData])) {
             (this.player_data as any)[propertyName] = value;
@@ -329,6 +329,14 @@ class PlayerManager {
         core.lock();
         core.setEventId(name);
         return true;
+    }
+
+    getGameScore() {
+        let rate = (this.getPlayerAttack() + this.getPlayerDefense() + this.getPlayerLevel() * 10) / 9500;
+        if (rate > 1) {
+            return 100;
+        }
+        return 100 * rate;
     }
 
     getPlayerLoc() {
